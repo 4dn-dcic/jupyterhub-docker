@@ -9,6 +9,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.jupyterhub
+      args:
+        JUPYTERHUB_VERSION: ${JUPYTERHUB_VERSION}
     image: jupyterhub
     container_name: jupyterhub
     volumes:
