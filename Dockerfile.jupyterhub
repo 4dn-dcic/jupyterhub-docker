@@ -1,0 +1,7 @@
+FROM jupyterhub/jupyterhub:0.9.2
+
+# Install dockerspawner, oauth
+RUN /opt/conda/bin/conda clean -tipsy && \
+    /opt/conda/bin/pip install --no-cache-dir \
+        oauthenticator==0.8.* \
+        dockerspawner==0.9.*
