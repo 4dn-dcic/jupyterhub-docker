@@ -62,7 +62,7 @@ c.JupyterHub.authenticator_class = 'noauthenticator.NoAuthenticator'
 c.LocalAuthenticator.add_user_cmd = ['adduser', '-q', '--gecos', '""', '--disabled-password', '--force-badname']
 c.LocalAuthenticator.create_system_users = True
 
-datadir = os.environ.get('DATA_VOLUME_CONTAINER', '/data')
+data_dir = os.environ.get('DATA_VOLUME_CONTAINER', '/data')
 c.JupyterHub.cookie_secret_file = os.path.join(data_dir, 'jupyterhub_cookie_secret')
 c.JupyterHub.db_url = os.path.join(data_dir, 'jupyterhub.sqlite')
 
