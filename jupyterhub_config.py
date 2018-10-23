@@ -1,6 +1,4 @@
 import os
-import dockerspawner
-
 
 c = get_config()
 
@@ -38,7 +36,12 @@ c.JupyterHub.hub_ip = 'jupyterhub'
 c.JupyterHub.hub_port = 8080
 
 # TLS config
-c.JupyterHub.port = 443
+# c.JupyterHub.port = 443
+# c.JupyterHub.ssl_key = os.environ['SSL_KEY']
+# c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
+
+# Development port
+c.JupyterHub.port = 8888
 c.JupyterHub.ssl_key = os.environ['SSL_KEY']
 c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 
