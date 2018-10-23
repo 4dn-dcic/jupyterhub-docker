@@ -33,14 +33,14 @@ c.DockerSpawner.remove_containers = True
 # For debugging arguments passed to spawned containers
 c.DockerSpawner.debug = True
 
-# User containers will access hub by container name on the Docker network
-#c.JupyterHub.hub_ip = 'jupyterhub'
-#c.JupyterHub.hub_port = 8080
+User containers will access hub by container name on the Docker network
+c.JupyterHub.hub_ip = 'jupyterhub'
+c.JupyterHub.hub_port = 8080
 
 # TLS config
-#c.JupyterHub.port = 443
-#c.JupyterHub.ssl_key = os.environ['SSL_KEY']
-#c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
+c.JupyterHub.port = 443
+c.JupyterHub.ssl_key = os.environ['SSL_KEY']
+c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 
 # Authenticate users with Auth0 OAuth
 #c.Auth0OAuthenticator.client_id = os.environ['AUTH0_CLIENT_ID']
@@ -49,18 +49,8 @@ c.DockerSpawner.debug = True
 #c.Auth0OAuthenticator.webtask_base_url = 'https://avillachlab.us.webtask.io/connection_details_base64/'
 #c.JupyterHub.authenticator_class = 'oauthenticator.auth0.Auth0OAuthenticator'
 
-# Development IPs... NOT SECURE
-c.JupyterHub.ip = '0.0.0.0'
-c.JupyterHub.port = 8000
-c.JupyterHub.hub_ip = '172.31.55.191'
-c.DockerSpawner.hub_ip_connect = '172.31.55.191'
-c.JupyterHub.confirm_no_ssl = True
-
-
 # Development authenticator
-c.JupyterHub.authenticator_class = 'noauthenticator.NoAuthenticator'
-c.LocalAuthenticator.add_user_cmd = ['adduser', '-q', '--gecos', '""', '--disabled-password', '--force-badname']
-c.LocalAuthenticator.create_system_users = True
+c.JupyterHub.authenticator_class = 'dummyauthenticator.DummyAuthenticator'
 
 data_dir = os.environ.get('DATA_VOLUME_CONTAINER', '/data')
 c.JupyterHub.cookie_secret_file = os.path.join(data_dir, 'jupyterhub_cookie_secret')
