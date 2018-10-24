@@ -52,8 +52,14 @@ c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 #c.Auth0OAuthenticator.webtask_base_url = 'https://avillachlab.us.webtask.io/connection_details_base64/'
 #c.JupyterHub.authenticator_class = 'oauthenticator.auth0.Auth0OAuthenticator'
 
+# Testing authenticator
+c.Auth0OAuthenticator.client_id = os.environ['AUTH0_CLIENT_ID']
+c.Auth0OAuthenticator.client_secret = os.environ['AUTH0_CLIENT_SECRET']
+c.Auth0OAuthenticator.oauth_callback_url = 'https://ec2-107-21-172-69.compute-1.amazonaws.com:8888/hub/oauth_callback'
+c.JupyterHub.authenticator_class = 'oauthenticator.auth0.Auth0OAuthenticator'
+
 # Development authenticator
-c.JupyterHub.authenticator_class = 'dummyauthenticator.DummyAuthenticator'
+# c.JupyterHub.authenticator_class = 'dummyauthenticator.DummyAuthenticator'
 
 data_dir = os.environ.get('DATA_VOLUME_CONTAINER', '/data')
 c.JupyterHub.cookie_secret_file = os.path.join(data_dir, 'jupyterhub_cookie_secret')
