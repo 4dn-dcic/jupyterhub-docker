@@ -2,6 +2,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 # JupyterHub docker-compose configuration file
+# run `sudo -E docker-compose up -d` for daemon mode with env vars from the shell
 version: "2"
 
 services:
@@ -31,7 +32,10 @@ services:
       DOCKER_NOTEBOOK_DIR: ${DOCKER_NOTEBOOK_DIR}
       # Using this run command (optional)
       DOCKER_SPAWN_CMD: ${DOCKER_SPAWN_CMD}
-      # AUTH0_SUBDOMAIN: hms-dbmi
+      AUTH0_SUBDOMAIN: hms-dbmi
+      # these should be set in the
+      AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
+      AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
 
     command: >
       jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
