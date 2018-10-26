@@ -11,8 +11,8 @@ RUN /opt/conda/bin/conda clean -tipsy && \
 # Copy TLS certificate and key
 ENV SSL_CERT /srv/jupyterhub/secrets/jupyterhub.crt
 ENV SSL_KEY /srv/jupyterhub/secrets/jupyterhub.key
-COPY ./secrets/*.crt $SSL_CERT
-COPY ./secrets/*.key $SSL_KEY
+COPY /etc/letsencrypt/live/jupyter.4dnucleome.org/fullchain.pem $SSL_CERT
+COPY /etc/letsencrypt/live/jupyter.4dnucleome.org/privkey.pem $SSL_KEY
 RUN chmod 700 /srv/jupyterhub/secrets && \
     chmod 600 /srv/jupyterhub/secrets/*
 
