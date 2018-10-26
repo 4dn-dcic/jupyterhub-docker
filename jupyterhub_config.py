@@ -39,12 +39,8 @@ c.JupyterHub.hub_ip = 'jupyterhub'
 c.JupyterHub.hub_port = 8080
 
 # TLS config
-# c.JupyterHub.port = 443
-# c.JupyterHub.ssl_key = os.environ['SSL_KEY']
-# c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
-
-# Development port
-c.JupyterHub.port = 8888
+c.JupyterHub.port = 443
+# c.JupyterHub.port = 8888
 c.JupyterHub.ssl_key = os.environ['SSL_KEY']
 c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 
@@ -58,7 +54,8 @@ c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 # Testing authenticator
 c.Auth0OAuthenticator.client_id = os.environ['AUTH0_CLIENT_ID']
 c.Auth0OAuthenticator.client_secret = os.environ['AUTH0_CLIENT_SECRET']
-c.Auth0OAuthenticator.oauth_callback_url = 'https://ec2-107-21-172-69.compute-1.amazonaws.com:8888/hub/oauth_callback'
+c.Auth0OAuthenticator.oauth_callback_url = 'https://jupyter.4dnucleome.org/hub/oauth_callback'
+# c.Auth0OAuthenticator.oauth_callback_url = 'https://ec2-107-21-172-69.compute-1.amazonaws.com:8888/hub/oauth_callback'
 c.JupyterHub.authenticator_class = 'oauthenticator.auth0.Auth0OAuthenticator'
 
 # Development authenticator
