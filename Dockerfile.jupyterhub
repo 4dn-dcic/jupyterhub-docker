@@ -8,12 +8,4 @@ RUN /opt/conda/bin/conda clean -tipsy && \
         dockerspawner==0.10.* \
         jupyterhub-dummyauthenticator==0.3.*
 
-# Copy TLS certificate and key
-ENV SSL_CERT /srv/jupyterhub/secrets/jupyterhub.fullchain.pem
-ENV SSL_KEY /srv/jupyterhub/secrets/jupyterhub.privkey.pem
-COPY ./secrets/fullchain.pem $SSL_CERT
-COPY ./secrets/privkey.pem $SSL_KEY
-RUN chmod 700 /srv/jupyterhub/secrets && \
-    chmod 600 /srv/jupyterhub/secrets/*
-
 COPY ./userlist /srv/jupyterhub/userlist
