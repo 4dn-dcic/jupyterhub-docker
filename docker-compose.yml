@@ -33,9 +33,11 @@ services:
       # Using this run command (optional)
       DOCKER_SPAWN_CMD: ${DOCKER_SPAWN_CMD}
       AUTH0_SUBDOMAIN: hms-dbmi
-      # these should be set in the
+      # these should be set in the environment of the machine running Docker
       AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
       AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
+      SECRET: ${SECRET}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
 
     command: >
       jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
