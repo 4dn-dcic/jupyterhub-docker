@@ -38,6 +38,8 @@ services:
       AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
       SECRET: ${SECRET}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
 
     command: >
       jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
