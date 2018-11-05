@@ -1,7 +1,11 @@
 import os
 import dockerspawner
+from dcicutils import ff_utils, s3_utils
 
 c = get_config()
+
+# get access keys for ff_utils. always use data.4dnucleome
+ff_keys = s3_utils.s3Utils(env='data').get_access_keys()
 
 c.JupyterHub.log_level  = "DEBUG"
 
@@ -40,9 +44,6 @@ c.JupyterHub.hub_port = 8080
 
 # TLS config
 c.JupyterHub.port = 80
-# c.JupyterHub.port = 443
-# c.JupyterHub.ssl_key = os.environ['SSL_KEY']
-# c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
 
 # Production authenticator
 c.Auth0OAuthenticator.client_id = os.environ['AUTH0_CLIENT_ID']
@@ -61,15 +62,11 @@ c.JupyterHub.db_url = os.path.join(data_dir, 'jupyterhub.sqlite')
 c.Authenticator.whitelist = whitelist = set()
 c.Authenticator.admin_users = admin = set()
 c.JupyterHub.admin_access = True
-pwd = os.path.dirname(__file__)
-with open(os.path.join(pwd, 'userlist')) as f:
-    for line in f:
-        if not line:
-            continue
-        parts = line.split()
-        # in case of newline at the end of userlist file
-        if len(parts) >= 1:
-            name = parts[0]
-            whitelist.add(name)
-            if len(parts) > 1 and parts[1] == 'admin':
-                admin.add(name)
+ff_users = ff_utils.search_metadata('search/?type=User&field=email', key=ff_keys)
+for ff_user in ff_users:
+    if not ff_user.get('email'):
+        continue
+    whitelist.add(ff_user['email'])
+    # base admin off of a set environment variable, for now
+    if os.environ.get('ADMIN_EMAIL') == ff_user['email']:
+        admin.add(ff_user['email'])

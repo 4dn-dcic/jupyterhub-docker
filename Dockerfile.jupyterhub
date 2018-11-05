@@ -1,11 +1,10 @@
 ARG JUPYTERHUB_VERSION
 FROM jupyterhub/jupyterhub-onbuild:$JUPYTERHUB_VERSION
 
-# Install dockerspawner, oauth
+# Install dockerspawner, oauth, dcicutils
 RUN /opt/conda/bin/conda clean -tipsy && \
     /opt/conda/bin/pip install --no-cache-dir \
         oauthenticator==0.8.* \
         dockerspawner==0.10.* \
+        dcicutils>=0.5.4 \
         jupyterhub-dummyauthenticator==0.3.*
-
-COPY ./userlist /srv/jupyterhub/userlist
