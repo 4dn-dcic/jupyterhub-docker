@@ -37,4 +37,4 @@ RUN mkdir -p $DATA_VOLUME_HOST/$AWS_NOTEBOOK_BUCKET
 WORKDIR /home
 USER root
 COPY supervisord.conf .
-CMD ["/usr/bin/supervisord", "-c", "supervisord.conf"]
+# CMD ["/usr/bin/supervisord", "-c", "supervisord.conf"]

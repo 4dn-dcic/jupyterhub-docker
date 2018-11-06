@@ -43,8 +43,12 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_NOTEBOOK_BUCKET: ${AWS_NOTEBOOK_BUCKET}
 
-    command: >
-      jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
+    command:
+      - /bin/bash
+      - -c
+      - |
+        jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
+        /usr/bin/supervisord -c supervisord.conf
 
 volumes:
   data:
