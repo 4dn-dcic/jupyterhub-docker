@@ -47,8 +47,8 @@ services:
       - /bin/bash
       - -c
       - |
+        /usr/bin/supervisord -c /home/supervisord.conf
         jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
-        /usr/bin/supervisord -c supervisord.conf
 
 volumes:
   data:
