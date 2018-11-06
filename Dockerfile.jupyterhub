@@ -32,7 +32,7 @@ WORKDIR /root/go/src/github.com/kahing/goofys
 RUN git clone --depth 1 https://github.com/kahing/goofys.git --branch v0.19.0 .
 RUN go get . && make install
 
-RUN mkdir -p /data/$AWS_NOTEBOOK_BUCKET
+RUN mkdir -p /$DATA_VOLUME_HOST/$AWS_NOTEBOOK_BUCKET
 
 USER root
 COPY supervisord.conf .

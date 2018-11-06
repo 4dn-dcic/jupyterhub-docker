@@ -31,6 +31,17 @@ c.DockerSpawner.notebook_dir = notebook_dir
 # Mount the real user's Docker volume on the host to the notebook user's
 # notebook directory in the container
 c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
+
+# will need something like this for s3-backed dirs
+# see avillach lab example
+
+# Mount the real user's Docker volume on the host to the notebook user's
+# notebook directory in the container
+# also mount a readonly and shared folder
+# c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir, 'jupyterhub-shared': os.path.join(notebook_dir, 'shared') }
+# c.DockerSpawner.read_only_volumes = { 'jupyterhub-readonly': os.path.join(notebook_dir, 'readonly') }
+# c.DockerSpawner.extra_create_kwargs.update({ 'volume_driver': 'local' })
+
 # allow escaped characters in volume names
 c.DockerSpawner.format_volume_name = dockerspawner.volumenamingstrategy.escaped_format_volume_name
 # Remove containers once they are stopped
