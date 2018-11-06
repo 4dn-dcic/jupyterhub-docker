@@ -1,6 +1,10 @@
 ARG JUPYTERHUB_VERSION
 FROM jupyterhub/jupyterhub-onbuild:$JUPYTERHUB_VERSION
 
+# Install supervisord
+RUN apt-get update && apt-get install -y \
+        supervisor=3.0r1-1+deb8u1
+
 # Install dockerspawner, oauth, dcicutils
 RUN /opt/conda/bin/conda clean -tipsy && \
     /opt/conda/bin/pip install --no-cache-dir \
@@ -8,3 +12,22 @@ RUN /opt/conda/bin/conda clean -tipsy && \
         dockerspawner==0.10.* \
         dcicutils>=0.5.4 \
         jupyterhub-dummyauthenticator==0.3.*
+
+# goofys setup
+WORKDIR /tmp
+ENV PATH=$PATH:/usr/local/go/bin
+RUN curl -O https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.9.2.linux-amd64.tar.gz && \
+    rm go1.9.2.linux-amd64.tar.gz
+
+RUN curl -L -O https://github.com/kahing/catfs/releases/download/v0.8.0/catfs && \
+    mv catfs /usr/bin && chmod 0755 /usr/bin/catfs
+
+ENV PATH=$PATH:/root/go/bin
+WORKDIR /root/go/src/github.com/kahing/goofys
+RUN git clone --depth 1 https://github.com/kahing/goofys.git --branch v0.19.0 .
+RUN go get . && make install
+
+USER root
+COPY supervisord.conf .
+CMD ["/usr/bin/supervisord", "-n"]

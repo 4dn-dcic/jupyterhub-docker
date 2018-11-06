@@ -40,6 +40,7 @@ services:
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_NOTEBOOK_BUCKET: ${AWS_NOTEBOOK_BUCKET}
 
     command: >
       jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
