@@ -23,6 +23,7 @@ services:
     ports:
       # - "443:443"
       - "80:80"
+    privileged: true
     environment:
       # All containers will join this network
       DOCKER_NETWORK_NAME: ${DOCKER_NETWORK_NAME}
