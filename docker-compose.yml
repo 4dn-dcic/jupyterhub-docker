@@ -42,14 +42,10 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_NOTEBOOK_BUCKET: ${AWS_NOTEBOOK_BUCKET}
+      AWS_TEMPLATE_BUCKET: ${AWS_TEMPLATE_BUCKET}
 
-    command:
-      - /bin/bash
-      - -c
-      - |
-        mkdir -p ${DATA_VOLUME_CONTAINER}/${AWS_NOTEBOOK_BUCKET}
-        /usr/bin/supervisord -c /home/supervisord.conf
-        jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
+    command: >
+      jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
 
 volumes:
   data:

@@ -26,15 +26,21 @@ c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = network_name
 # Pass the network name as argument to spawned containers
 c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
-notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR')
-c.DockerSpawner.notebook_dir = notebook_dir
+
+
+# notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR')
+# c.DockerSpawner.notebook_dir = notebook_dir
 # Mount the real user's Docker volume on the host to the notebook user's
-# notebook directory in the container
-c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
+# notebook directory in the container. In form: {path/on/host: path/on/container}
+# c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
+
+# https://stackoverflow.com/questions/51330356/jupyterhub-in-docker-container-not-able-to-connect-to-external-directory
+notebook_mount_dir = '/home/ubuntu/data/jupyterhub-fourfront-templates' #'/path/on/host'
+notebook_dir = '/userdata' #'/path/in/dockerinstance'
+c.DockerSpawner.volumes = {notebook_mount_dir: {"bind": notebook_dir, "mode": "rw"}}
 
 # will need something like this for s3-backed dirs
 # see avillach lab example
-
 # Mount the real user's Docker volume on the host to the notebook user's
 # notebook directory in the container
 # also mount a readonly and shared folder
