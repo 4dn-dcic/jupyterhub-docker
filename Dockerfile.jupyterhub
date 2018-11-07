@@ -36,5 +36,6 @@ RUN mkdir -p $DATA_VOLUME_HOST/$AWS_NOTEBOOK_BUCKET
 
 WORKDIR /home
 COPY supervisord.conf .
+
 # This didn't work -- start supervisord in docker-compose.yml
 # CMD ["/usr/bin/supervisord", "-c", "supervisord.conf"]
