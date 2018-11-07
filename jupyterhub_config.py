@@ -30,8 +30,7 @@ notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR')
 c.DockerSpawner.notebook_dir = notebook_dir
 # Mount the real user's Docker volume on the host to the notebook user's
 # notebook directory in the container
-# c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
-c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': '/data/jupyterhub-fourfront-templates' }
+c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
 
 # will need something like this for s3-backed dirs
 # see avillach lab example
