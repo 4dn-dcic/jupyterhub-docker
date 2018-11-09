@@ -15,8 +15,8 @@ c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 
 # by default, c.DockerSpawner.container_image uses jupyterhub/singleuser image with the appropriate tag that pins version
 # otherwise, do something like:
-# c.DockerSpawner.container_image = 'jupyter/scipy-notebook:8f56e3c47fec'
-c.DockerSpawner.container_image = os.environ['DOCKER_NOTEBOOK_IMAGE']
+# c.DockerSpawner.image = 'jupyter/scipy-notebook:8f56e3c47fec'
+c.DockerSpawner.image = os.environ['DOCKER_NOTEBOOK_IMAGE']
 # default `start_singleruser.sh` is included
 spawn_cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
 c.DockerSpawner.extra_create_kwargs.update({ 'command': spawn_cmd })
@@ -36,7 +36,7 @@ c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
 
 # https://stackoverflow.com/questions/51330356/jupyterhub-in-docker-container-not-able-to-connect-to-external-directory
 notebook_mount_dir = '/home/ubuntu/data/jupyterhub-fourfront-templates' #'/path/on/host'
-notebook_dir = '/userdata' #'/path/in/dockerinstance'
+notebook_dir = '/user_data' #'/path/in/dockerinstance'
 c.DockerSpawner.volumes = {notebook_mount_dir: {"bind": notebook_dir, "mode": "rw"}}
 
 # will need something like this for s3-backed dirs
