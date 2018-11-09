@@ -35,8 +35,10 @@ c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
 # c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
 
 # https://stackoverflow.com/questions/51330356/jupyterhub-in-docker-container-not-able-to-connect-to-external-directory
-notebook_mount_dir = '/home/ubuntu/data/jupyterhub-fourfront-templates' #'/path/on/host'
-notebook_dir = '/user_data' #'/path/in/dockerinstance'
+notebook_mount_dir = '/home/ubuntu/data/jupyterhub-fourfront-notebooks/user-{username}' #'/path/on/host'
+notebook_dir = '/persistent_data' #'/path/in/dockerinstance'
+c.DockerSpawner.notebook_dir = notebook_dir
+print('\n->>> %s\n' % 'jupyterhub-user-{username}')
 c.DockerSpawner.volumes = {notebook_mount_dir: {"bind": notebook_dir, "mode": "rw"}}
 
 # will need something like this for s3-backed dirs
