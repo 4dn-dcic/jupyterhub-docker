@@ -20,21 +20,22 @@ def initialize_user_content(spawner):
     environment variables of the notebook.
     """
     username = spawner.user.name  # get the username
-    template_files = s3_client.list_objects_v2(
+    list_res = s3_client.list_objects_v2(
         Bucket=os.environ['AWS_TEMPLATE_BUCKET']
     )
     # check each template individually
-    for template in template_files:
-        temp_key = '/'.join([username, template])
+    for template_res in list_res.get('Contents', []):
+        template_key = template_res['Key']
+        notebook_temp_key = '/'.join([username, template_key])
         try:
             s3_client.head_object(Bucket=os.environ['AWS_NOTEBOOK_BUCKET'],
-                                  Key=temp_key)
+                                  Key=notebook_temp_key)
         except ClientError as exc:
             if exc.response.get('Error', {}).get('Code') == '404':
                 source_info = {"Bucket": os.environ['AWS_TEMPLATE_BUCKET'],
-                               "Key": template}
+                               "Key": template_key}
                 s3_client.copy_object(Bucket=os.environ["AWS_NOTEBOOK_BUCKET"],
-                                      Key=temp_key, CopySource=source_info)
+                                      Key=notebook_temp_key, CopySource=source_info)
 
 c.JupyterHub.log_level  = "DEBUG"
 # attach the hook function to the spawner
