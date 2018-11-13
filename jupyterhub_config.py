@@ -39,7 +39,8 @@ def initialize_user_content(spawner):
     # check each template individually
     for template_res in list_res.get('Contents', []):
         template_key = template_res['Key']
-        notebook_temp_key = '/'.join([escape_string(username), template_key])
+        user_subdir = 'user-' + escape_string(username)
+        notebook_temp_key = '/'.join([user_subdir, template_key])
         try:
             s3_client.head_object(Bucket=os.environ['AWS_NOTEBOOK_BUCKET'],
                                   Key=notebook_temp_key)
