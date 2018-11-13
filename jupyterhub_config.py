@@ -11,6 +11,19 @@ s3_client = boto3.client('s3')
 # get access keys for ff_utils. always use data.4dnucleome
 ff_keys = s3_utils.s3Utils(env='data').get_access_keys()
 
+def escape_string(in_str):
+    """
+    Escape a string the way DockerSpawner does, which is needed to make
+    the user email match
+    """
+    ds_class = dockerspawner.dockerspawner.DockerSpawner
+    return dockerspawner.dockerspawner.escape(
+        in_str,
+        safe=ds_class._docker_safe_chars,
+        escape_char=ds_class._docker_escape_char
+    )
+
+
 def initialize_user_content(spawner):
     """
     Used to initialize the users s3-backed notebook storage.
@@ -26,7 +39,7 @@ def initialize_user_content(spawner):
     # check each template individually
     for template_res in list_res.get('Contents', []):
         template_key = template_res['Key']
-        notebook_temp_key = '/'.join([username, template_key])
+        notebook_temp_key = '/'.join([escape_string(username), template_key])
         try:
             s3_client.head_object(Bucket=os.environ['AWS_NOTEBOOK_BUCKET'],
                                   Key=notebook_temp_key)
@@ -36,6 +49,7 @@ def initialize_user_content(spawner):
                                "Key": template_key}
                 s3_client.copy_object(Bucket=os.environ["AWS_NOTEBOOK_BUCKET"],
                                       Key=notebook_temp_key, CopySource=source_info)
+
 
 c.JupyterHub.log_level  = "DEBUG"
 # attach the hook function to the spawner
