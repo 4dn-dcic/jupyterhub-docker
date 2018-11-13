@@ -1,18 +1,47 @@
 import os
 import dockerspawner
+import boto3
 from dcicutils import ff_utils, s3_utils
+from botocore.exceptions import ClientError
+
 
 c = get_config()
+s3_client = boto3.client('s3')
 
 # get access keys for ff_utils. always use data.4dnucleome
 ff_keys = s3_utils.s3Utils(env='data').get_access_keys()
 
-c.JupyterHub.log_level  = "DEBUG"
+def initialize_user_content(spawner):
+    """
+    Used to initialize the users s3-backed notebook storage.
+    For initialization, ensure all notebook templates are copied
+    (check every time)
+    In addition, load access keys from Fourfront and add them to the
+    environment variables of the notebook.
+    """
+    username = spawner.user.name  # get the username
+    template_files = s3_client.list_objects_v2(
+        Bucket=os.environ['AWS_TEMPLATE_BUCKET']
+    )
+    # check each template individually
+    for template in template_files:
+        temp_key = '/'.join([username, template])
+        try:
+            s3_client.head_object(Bucket=os.environ['AWS_NOTEBOOK_BUCKET'],
+                                  Key=temp_key)
+        except ClientError as exc:
+            if exc.response.get('Error', {}).get('Code') == '404':
+                source_info = {"Bucket": os.environ['AWS_TEMPLATE_BUCKET'],
+                               "Key": template}
+                s3_client.copy_object(Bucket=os.environ["AWS_NOTEBOOK_BUCKET"],
+                                      Key=temp_key, CopySource=source_info)
 
+c.JupyterHub.log_level  = "DEBUG"
+# attach the hook function to the spawner
+c.Spawner.pre_spawn_hook = initialize_user_content
 # Spawn single-user servers as Docker containers
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 # Spawn containers from this image
-
 # by default, c.DockerSpawner.container_image uses jupyterhub/singleuser image with the appropriate tag that pins version
 # otherwise, do something like:
 # c.DockerSpawner.image = 'jupyter/scipy-notebook:8f56e3c47fec'
@@ -26,6 +55,7 @@ c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = network_name
 # Pass the network name as argument to spawned containers
 c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
+
 
 
 notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR')
