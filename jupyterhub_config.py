@@ -60,7 +60,6 @@ def initialize_user_content(spawner):
                 err_output.append({'finding_templates': str(head_exc)})
 
     # get the access keys and set them as environment variables for the user
-    # ONLY variables added to c.env_keep are passed to the user process
     try:
         ff_user = ff_utils.get_metadata('/users/' + username, key=ff_keys)
     except Exception as user_exc:
@@ -94,6 +93,8 @@ def initialize_user_content(spawner):
 c.JupyterHub.log_level  = "DEBUG"
 # attach the hook function to the spawner
 c.Spawner.pre_spawn_hook = initialize_user_content
+# propogate these variables to the user notebook processes
+c.Spawner.env_keep.extend(['FF_ACCESS_KEY', 'FF_ACCESS_SECRET', 'INIT_ERR_OUTPUT'])
 # Spawn single-user servers as Docker containers
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 # Spawn containers from this image
