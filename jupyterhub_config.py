@@ -1,6 +1,7 @@
 import os
 import dockerspawner
 import boto3
+import json
 from dcicutils import ff_utils, s3_utils
 from botocore.exceptions import ClientError
 
@@ -87,7 +88,7 @@ def initialize_user_content(spawner):
         else:
             os.environ['FF_ACCESS_KEY'] = key_res['access_key_id']
             os.environ['FF_ACCESS_SECRET'] = key_res['secret_access_key']
-    os.environ['INIT_ERR_OUTPUT'] = err_output
+    os.environ['INIT_ERR_OUTPUT'] = json.dumps(err_output)
 
 
 c.JupyterHub.log_level  = "DEBUG"
