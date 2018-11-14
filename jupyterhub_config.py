@@ -81,7 +81,7 @@ def initialize_user_content(spawner):
         # access key will be submitted by 4dn-dcic admin but belong to user
         key_body = {'user': ff_user['uuid'], 'description': key_descrip}
         try:
-            key_res = ff_utils.post_metadata(key_body, key=ff_keys)
+            key_res = ff_utils.post_metadata(key_body, 'access-keys', key=ff_keys)
         except Exception as key_exc:
             err_output.append({'post_key': str(key_exc)})
         else:
