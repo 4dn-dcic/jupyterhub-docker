@@ -30,8 +30,10 @@ def initialize_user_content(spawner):
     For initialization, ensure all notebook templates are copied
     (check every time)
     In addition, load access keys from Fourfront and add them to the
-    environment variables of the notebook.
+    environment variables of the notebook. Also delete previously created
+    access keys used for Jupyterhub for the user
     """
+    err_output = []  # keep track of errors for debugging
     username = spawner.user.name  # get the username
     list_res = s3_client.list_objects_v2(
         Bucket=os.environ['AWS_TEMPLATE_BUCKET']
@@ -44,12 +46,48 @@ def initialize_user_content(spawner):
         try:
             s3_client.head_object(Bucket=os.environ['AWS_NOTEBOOK_BUCKET'],
                                   Key=notebook_temp_key)
-        except ClientError as exc:
+        except ClientError as head_exc:
             if exc.response.get('Error', {}).get('Code') == '404':
                 source_info = {"Bucket": os.environ['AWS_TEMPLATE_BUCKET'],
                                "Key": template_key}
-                s3_client.copy_object(Bucket=os.environ["AWS_NOTEBOOK_BUCKET"],
-                                      Key=notebook_temp_key, CopySource=source_info)
+                try:
+                    s3_client.copy_object(Bucket=os.environ["AWS_NOTEBOOK_BUCKET"],
+                                          Key=notebook_temp_key, CopySource=source_info)
+                except Exception as copy_exc:
+                    err_output.append({'copying_templates': str(copy_exc)})
+            else:
+                err_output.append({'finding_templates': str(head_exc)})
+
+    # get the access keys and set them as environment variables for the user
+    # ONLY variables added to c.env_keep are passed to the user process
+    try:
+        ff_user = ff_utils.get_metadata('/users/' + username, key=ff_keys)
+    except Exception as user_exc:
+        err_output.append({'getting_user': str(user_exc)})
+    else:
+        key_descrip = 'jupyterhub_key'
+        search_q = ''.join(['/search/?type=AccessKey&status=current&description=',
+                            key_descrip, '&user.uuid=', ff_user['uuid']])
+        try:
+            user_keys = ff_utils.search_metadata(search_q, key=ff_keys)
+        except Exception as search_exc:
+            err_output.append({'searching_keys': str(search_exc)})
+        else:
+            for ukey in user_keys:
+                try:
+                    ff_utils.patch_metadata({'status': 'deleted'}, ukey['uuid'], key=ff_keys)
+                except Exception as patch_exc:
+                    err_output.append({'deleting_keys': str(patch_exc)})
+        # access key will be submitted by 4dn-dcic admin but belong to user
+        key_body = {'user': ff_user['uuid'], 'description': key_descrip}
+        try:
+            key_res = ff_utils.post_metadata(key_body, key=ff_keys)
+        except Exception as key_exc:
+            err_output.append({'post_key': str(key_exc)})
+        else:
+            os.environ['FF_ACCESS_KEY'] = key_res['access_key_id']
+            os.environ['FF_ACCESS_SECRET'] = key_res['secret_access_key']
+    os.environ['INIT_ERR_OUTPUT'] = err_output
 
 
 c.JupyterHub.log_level  = "DEBUG"
@@ -58,8 +96,8 @@ c.Spawner.pre_spawn_hook = initialize_user_content
 # Spawn single-user servers as Docker containers
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 # Spawn containers from this image
-# by default, c.DockerSpawner.container_image uses jupyterhub/singleuser image with the appropriate tag that pins version
-# otherwise, do something like:
+# by default, c.DockerSpawner.container_image uses jupyterhub/singleuser image
+# with the appropriate tag that pins version. Otherwise, do something like:
 # c.DockerSpawner.image = 'jupyter/scipy-notebook:8f56e3c47fec'
 c.DockerSpawner.image = os.environ['DOCKER_NOTEBOOK_IMAGE']
 # default `start_singleruser.sh` is included
@@ -76,22 +114,12 @@ c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
 
 notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR')
 c.DockerSpawner.notebook_dir = notebook_dir
-# Mount the real user's Docker volume on the host to the notebook user's
-# notebook directory in the container. In form: {path/on/host: path/on/container}
-# c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
 
 # https://stackoverflow.com/questions/51330356/jupyterhub-in-docker-container-not-able-to-connect-to-external-directory
-notebook_mount_dir = '/home/ubuntu/data/jupyterhub-fourfront-notebooks/user-{username}' #'/path/on/host'
+# notebook_mount_dir in form: '/path/on/host'
+notebook_mount_dir = '/home/ubuntu/data/jupyterhub-fourfront-notebooks/user-{username}'
+# notebook_dir in form: '/path/on/container'
 c.DockerSpawner.volumes = {notebook_mount_dir: {"bind": notebook_dir, "mode": "rw"}}
-
-# will need something like this for s3-backed dirs
-# see avillach lab example
-# Mount the real user's Docker volume on the host to the notebook user's
-# notebook directory in the container
-# also mount a readonly and shared folder
-# c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir, 'jupyterhub-shared': os.path.join(notebook_dir, 'shared') }
-# c.DockerSpawner.read_only_volumes = { 'jupyterhub-readonly': os.path.join(notebook_dir, 'readonly') }
-# c.DockerSpawner.extra_create_kwargs.update({ 'volume_driver': 'local' })
 
 # allow escaped characters in volume names
 c.DockerSpawner.format_volume_name = dockerspawner.volumenamingstrategy.escaped_format_volume_name
