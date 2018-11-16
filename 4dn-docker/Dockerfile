@@ -3,6 +3,7 @@ FROM jupyter/minimal-notebook:8ccdfc1da8d5
 MAINTAINER Soo Lee (duplexa@gmail.com)
 
 USER root
+WORKDIR /tools
 
 # 1. general updates & installing necessary Linux components
 RUN apt-get update -y && apt-get install -y \
@@ -36,7 +37,7 @@ RUN apt-get update -y && apt-get install -y \
     python3-setuptools \
     && wget https://bootstrap.pypa.io/get-pip.py \
     && python3 get-pip.py \
-    && ln -s /usr/bin/python3.6 /usr/local/bin/python
+    && ln -s /usr/bin/python3.6 /tools/python
 
 
 # installing conda
@@ -114,16 +115,19 @@ RUN pip install scipy matplotlib pandas h5py pyBigWig
 
 
 # set path
-ENV PATH=/usr/local/bin/samtools/:$PATH
-ENV PATH=/usr/local/bin/pairix/bin/:/usr/local/bin/pairix/util/:$PATH
-ENV PATH=/usr/local/bin/pairix/util/bam2pairs/:$PATH
-ENV PATH=/usr/local/bin/bedtools2/bin/:$PATH
-ENV PATH=/usr/local/bin/kentUtils/bin/:$PATH
+ENV PATH=/tools/samtools/:$PATH
+ENV PATH=/tools/pairix/bin/:/tools/pairix/util/:$PATH
+ENV PATH=/tools/pairix/util/bam2pairs/:$PATH
+ENV PATH=/tools/bedtools2/bin/:$PATH
+ENV PATH=/tools/kentUtils/bin/:$PATH
 
 
 # supporting UTF-8
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
+
+USER jovyan
+WORKDIR /home/jovyan/
 
 CMD ["bash"]
 
