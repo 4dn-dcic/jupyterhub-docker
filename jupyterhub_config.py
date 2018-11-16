@@ -48,7 +48,7 @@ def initialize_user_content(spawner):
             s3_client.head_object(Bucket=os.environ['AWS_NOTEBOOK_BUCKET'],
                                   Key=notebook_temp_key)
         except ClientError as head_exc:
-            if exc.response.get('Error', {}).get('Code') == '404':
+            if head_exc.response.get('Error', {}).get('Code') == '404':
                 source_info = {"Bucket": os.environ['AWS_TEMPLATE_BUCKET'],
                                "Key": template_key}
                 try:
