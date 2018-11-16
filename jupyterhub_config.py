@@ -121,8 +121,12 @@ c.DockerSpawner.notebook_dir = notebook_dir
 # https://stackoverflow.com/questions/51330356/jupyterhub-in-docker-container-not-able-to-connect-to-external-directory
 # notebook_mount_dir in form: '/path/on/host'
 notebook_mount_dir = '/home/ubuntu/data/jupyterhub-fourfront-notebooks/user-{username}'
+raw_data_mount_dir = '/home/ubuntu/data/' + os.environ['AWS_RAW_FILE_BUCKET']
+proc_data_mount_dir = '/home/ubuntu/data/' + os.environ['AWS_PROC_FILE_BUCKET']
 # notebook_dir in form: '/path/on/container'
-c.DockerSpawner.volumes = {notebook_mount_dir: {"bind": notebook_dir, "mode": "rw"}}
+c.DockerSpawner.volumes = {notebook_mount_dir: {"bind": notebook_dir, "mode": "rw"},
+                           raw_data_mount_dir: {"bind": '/home/jovyan/raw_data', "mode": "ro"},
+                           proc_data_mount_dir: {"bind": '/home/jovyan/proc_data', "mode": "ro"}}
 
 # allow escaped characters in volume names
 c.DockerSpawner.format_volume_name = dockerspawner.volumenamingstrategy.escaped_format_volume_name
