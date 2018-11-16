@@ -103,16 +103,17 @@ c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 # c.DockerSpawner.image = 'jupyter/scipy-notebook:8f56e3c47fec'
 c.DockerSpawner.image = os.environ['DOCKER_NOTEBOOK_IMAGE']
 # default `start_singleruser.sh` is included
-spawn_cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
-c.DockerSpawner.extra_create_kwargs.update({ 'command': spawn_cmd })
+c.DockerSpawner.cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
+# can I remove these two lines?
+# spawn_cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
+# c.DockerSpawner.extra_create_kwargs.update({ 'command': spawn_cmd })
+
 # Connect containers to this Docker network
 network_name = os.environ['DOCKER_NETWORK_NAME']
 c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = network_name
 # Pass the network name as argument to spawned containers
 c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
-
-
 
 notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR')
 c.DockerSpawner.notebook_dir = notebook_dir
