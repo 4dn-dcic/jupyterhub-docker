@@ -127,7 +127,7 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
 USER jovyan
-WORKDIR /home/jovyan/
+WORKDIR /home/jovyan/work
 
 CMD ["bash"]
 
