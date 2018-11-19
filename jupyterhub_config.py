@@ -1,5 +1,7 @@
 import os
+import shutil
 import dockerspawner
+from dockerspawner.volumenamingstrategy import escaped_format_volume_name
 import boto3
 import json
 from dcicutils import ff_utils, s3_utils
@@ -11,6 +13,16 @@ s3_client = boto3.client('s3')
 
 # get access keys for ff_utils. always use data.4dnucleome
 ff_keys = s3_utils.s3Utils(env='data').get_access_keys()
+
+
+def escaped_format_volume_name_and_chmod(label_template, spawner):
+    # test
+    volume_name = escaped_format_volume_name(label_template, spawner)
+    if '_data' in volume_name:
+        shutil.chown(volume_name, user='root', group='root')
+        os.chmod(path, 0o444)
+    return volume_name
+
 
 def escape_string(in_str):
     """
@@ -129,7 +141,7 @@ c.DockerSpawner.volumes = {notebook_mount_dir: {"bind": notebook_dir, "mode": "r
                            proc_data_mount_dir: {"bind": '/home/jovyan/proc_data', "mode": "ro"}}
 
 # allow escaped characters in volume names
-c.DockerSpawner.format_volume_name = dockerspawner.volumenamingstrategy.escaped_format_volume_name
+c.DockerSpawner.format_volume_name = escaped_format_volume_name_and_chmod
 # Remove containers once they are stopped
 c.DockerSpawner.remove_containers = True
 # For debugging arguments passed to spawned containers
