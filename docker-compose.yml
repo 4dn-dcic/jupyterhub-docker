@@ -37,6 +37,7 @@ services:
       # these should be set in the environment of the machine running Docker
       AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
       AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
+      AUTH0_CALLBACK_URL: ${AUTH0_CALLBACK_URL}
       SECRET: ${SECRET}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
