@@ -145,7 +145,7 @@ c.JupyterHub.port = 80
 # Production authenticator
 c.Auth0OAuthenticator.client_id = os.environ['AUTH0_CLIENT_ID']
 c.Auth0OAuthenticator.client_secret = os.environ['AUTH0_CLIENT_SECRET']
-c.Auth0OAuthenticator.oauth_callback_url = 'https://jupyter.4dnucleome.org/hub/oauth_callback'
+c.Auth0OAuthenticator.oauth_callback_url = ['AUTH0_CALLBACK_URL']
 c.JupyterHub.authenticator_class = 'oauthenticator.auth0.Auth0OAuthenticator'
 
 # Development authenticator
