@@ -48,7 +48,7 @@ def initialize_user_content(spawner):
             s3_client.head_object(Bucket=os.environ['AWS_NOTEBOOK_BUCKET'],
                                   Key=notebook_temp_key)
         except ClientError as head_exc:
-            if exc.response.get('Error', {}).get('Code') == '404':
+            if head_exc.response.get('Error', {}).get('Code') == '404':
                 source_info = {"Bucket": os.environ['AWS_TEMPLATE_BUCKET'],
                                "Key": template_key}
                 try:
@@ -103,8 +103,11 @@ c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 # c.DockerSpawner.image = 'jupyter/scipy-notebook:8f56e3c47fec'
 c.DockerSpawner.image = os.environ['DOCKER_NOTEBOOK_IMAGE']
 # default `start_singleruser.sh` is included
-spawn_cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
-c.DockerSpawner.extra_create_kwargs.update({ 'command': spawn_cmd })
+c.DockerSpawner.cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
+# can I remove these two lines?
+# spawn_cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
+# c.DockerSpawner.extra_create_kwargs.update({ 'command': spawn_cmd })
+
 # Connect containers to this Docker network
 network_name = os.environ['DOCKER_NETWORK_NAME']
 c.DockerSpawner.use_internal_ip = True
@@ -112,16 +115,18 @@ c.DockerSpawner.network_name = network_name
 # Pass the network name as argument to spawned containers
 c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
 
-
-
 notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR')
 c.DockerSpawner.notebook_dir = notebook_dir
 
 # https://stackoverflow.com/questions/51330356/jupyterhub-in-docker-container-not-able-to-connect-to-external-directory
 # notebook_mount_dir in form: '/path/on/host'
 notebook_mount_dir = '/home/ubuntu/data/jupyterhub-fourfront-notebooks/user-{username}'
+raw_data_mount_dir = '/home/ubuntu/data/' + os.environ['AWS_RAW_FILE_BUCKET']
+proc_data_mount_dir = '/home/ubuntu/data/' + os.environ['AWS_PROC_FILE_BUCKET']
 # notebook_dir in form: '/path/on/container'
-c.DockerSpawner.volumes = {notebook_mount_dir: {"bind": notebook_dir, "mode": "rw"}}
+c.DockerSpawner.volumes = {notebook_mount_dir: {"bind": notebook_dir, "mode": "rw"},
+                           raw_data_mount_dir: {"bind": '/home/jovyan/raw_data', "mode": "ro"},
+                           proc_data_mount_dir: {"bind": '/home/jovyan/proc_data', "mode": "ro"}}
 
 # allow escaped characters in volume names
 c.DockerSpawner.format_volume_name = dockerspawner.volumenamingstrategy.escaped_format_volume_name
@@ -140,8 +145,7 @@ c.JupyterHub.port = 80
 # Production authenticator
 c.Auth0OAuthenticator.client_id = os.environ['AUTH0_CLIENT_ID']
 c.Auth0OAuthenticator.client_secret = os.environ['AUTH0_CLIENT_SECRET']
-#c.Auth0OAuthenticator.oauth_callback_url = 'https://jupyter.4dnucleome.org/hub/oauth_callback'
-c.Auth0OAuthenticator.oauth_callback_url = 'http://ec2-54-172-68-130.compute-1.amazonaws.com/hub/oauth_callback'
+c.Auth0OAuthenticator.oauth_callback_url = 'https://jupyter.4dnucleome.org/hub/oauth_callback'
 c.JupyterHub.authenticator_class = 'oauthenticator.auth0.Auth0OAuthenticator'
 
 # Development authenticator
