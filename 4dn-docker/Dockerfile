@@ -40,13 +40,6 @@ RUN apt-get update -y && apt-get install -y \
     && ln -s /usr/bin/python3.6 /tools/python
 
 
-# installing conda
-RUN wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh && bash Miniconda2-latest-Linux-x86_64.sh -p /miniconda2 -b
-ENV PATH=/miniconda2/bin:$PATH
-RUN conda update -y conda \
-    && rm Miniconda2-latest-Linux-x86_64.sh
-
-
 ## SOFTWARE: samtools
 ## VERSION: 1.2
 ## TYPE: file format converter
@@ -69,23 +62,6 @@ RUN wget https://github.com/4dn-dcic/pairix/archive/0.3.6.tar.gz \
     && make \
     && cd .. \
     && ln -s pairix-0.3.6 pairix 
-
-## SOFTWARE: cooler
-## VERSION: 0.7.11
-## TYPE: aggregator,normalizer
-## SOURCE_URL: https://github.com/mirnylab/cooler
-RUN pip install cooler==0.7.11
-
-## SOFTWARE: pairtools
-## COMMIT: 0.2.0
-## TYPE: file format converter,sorter,annotater,filter
-## SOURCE_URL: https://github.com/mirnylab/pairsamtools
-RUN pip install numpy Cython click \
-    && conda config --add channels conda-forge \
-    && conda config --add channels bioconda \
-    && conda install -y pbgzip \
-    && conda install -y coreutils \
-    && pip install git+https://github.com/mirnylab/pairtools.git@v0.2.0
 
 ## SOFTWARE: bedtools
 ## VERSION: 2.26.0
@@ -110,9 +86,6 @@ RUN git clone https://github.com/ENCODE-DCC/kentUtils \
 # straw
 RUN git clone https://github.com/aidenlab/straw
 
-## other python libraries
-RUN pip install scipy matplotlib pandas h5py pyBigWig
-
 
 # set path
 ENV PATH=/tools/samtools/:$PATH
@@ -128,6 +101,22 @@ ENV LANG=C.UTF-8
 
 USER jovyan
 WORKDIR /home/jovyan/work
+
+## SOFTWARE: cooler
+## VERSION: 0.7.11
+## TYPE: aggregator,normalizer
+## SOURCE_URL: https://github.com/mirnylab/cooler
+RUN pip3 install cooler==0.7.11
+
+## SOFTWARE: pairtools
+## COMMIT: 0.2.0
+## TYPE: file format converter,sorter,annotater,filter
+## SOURCE_URL: https://github.com/mirnylab/pairsamtools
+RUN pip3 install numpy Cython click pairtools
+
+## other python libraries
+RUN pip3 install scipy matplotlib pandas h5py pyBigWig
+
 
 CMD ["bash"]
 
