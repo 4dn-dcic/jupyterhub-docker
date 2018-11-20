@@ -10,8 +10,10 @@ from botocore.exceptions import ClientError
 c = get_config()
 s3_client = boto3.client('s3')
 
-# get access keys for ff_utils. always use data.4dnucleome
-ff_keys = s3_utils.s3Utils(env='data').get_access_keys()
+# get access keys and jupyterhub token for dcicutils. always use 'data' env
+s3_helper = s3_utils.s3Utils(env='data')
+ff_keys = s3_helper.get_ff_key()
+jh_token = s3_helper.get_jupyterhub_key()
 
 def escape_string(in_str):
     """
@@ -116,7 +118,7 @@ c.DockerSpawner.network_name = network_name
 # Pass the network name as argument to spawned containers
 c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
 
-notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR')
+notebook_dir = os.environ['DOCKER_NOTEBOOK_DIR']
 c.DockerSpawner.notebook_dir = notebook_dir
 
 # https://stackoverflow.com/questions/51330356/jupyterhub-in-docker-container-not-able-to-connect-to-external-directory
@@ -152,7 +154,7 @@ c.JupyterHub.authenticator_class = 'oauthenticator.auth0.Auth0OAuthenticator'
 # Development authenticator
 # c.JupyterHub.authenticator_class = 'dummyauthenticator.DummyAuthenticator'
 
-data_dir = os.environ.get('DATA_VOLUME_CONTAINER', '/data')
+data_dir = os.environ['DATA_VOLUME_CONTAINER']
 c.JupyterHub.cookie_secret_file = os.path.join(data_dir, 'jupyterhub_cookie_secret')
 c.JupyterHub.db_url = os.path.join(data_dir, 'jupyterhub.sqlite')
 
@@ -166,8 +168,13 @@ for ff_user in ff_users:
         continue
     whitelist.add(ff_user['email'])
     # base admin off of a set environment variable, for now
-    if os.environ.get('ADMIN_EMAIL') == ff_user['email']:
+    if os.environ['ADMIN_EMAIL'] == ff_user['email']:
         admin.add(ff_user['email'])
+
+# add API token to the instance
+c.JupyterHub.api_tokens = {
+    jh_token: os.environ['ADMIN_EMAIL'],
+}
 
 # set up services
 # cull-idle runs every 3600 seconds
