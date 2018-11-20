@@ -1,4 +1,5 @@
 import os
+import sys
 import dockerspawner
 import boto3
 import json
@@ -167,3 +168,13 @@ for ff_user in ff_users:
     # base admin off of a set environment variable, for now
     if os.environ.get('ADMIN_EMAIL') == ff_user['email']:
         admin.add(ff_user['email'])
+
+# set up services
+# cull-idle runs every 3600 seconds
+c.JupyterHub.services = [
+    {
+        'name': 'cull-idle',
+        'admin': True,
+        'command': [sys.executable, 'cull_idle_servers.py', '--timeout=3600'],
+    }
+]
