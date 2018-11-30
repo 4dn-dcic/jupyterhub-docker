@@ -61,7 +61,7 @@ RUN wget https://github.com/4dn-dcic/pairix/archive/0.3.6.tar.gz \
     && cd pairix-0.3.6 \
     && make \
     && cd .. \
-    && ln -s pairix-0.3.6 pairix 
+    && ln -s pairix-0.3.6 pairix
 
 ## SOFTWARE: bedtools
 ## VERSION: 2.26.0
@@ -114,9 +114,11 @@ RUN pip3 install cooler==0.7.11
 ## SOURCE_URL: https://github.com/mirnylab/pairsamtools
 RUN pip3 install numpy Cython click pairtools
 
+## install dcicutils
+RUN pip3 install dcicutils>=0.5.5
+
 ## other python libraries
 RUN pip3 install scipy matplotlib pandas h5py pyBigWig
 
 
 CMD ["bash"]
-

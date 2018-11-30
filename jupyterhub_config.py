@@ -98,6 +98,8 @@ c.JupyterHub.log_level  = "DEBUG"
 c.Spawner.pre_spawn_hook = initialize_user_content
 # propogate these variables to the user notebook processes
 c.Spawner.env_keep.extend(['FF_ACCESS_KEY', 'FF_ACCESS_SECRET', 'INIT_ERR_OUTPUT'])
+# limit the memory use for single-user servers
+c.Spawner.mem_limit = '2G'
 # Spawn single-user servers as Docker containers
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 # Spawn containers from this image

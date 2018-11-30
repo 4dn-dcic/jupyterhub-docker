@@ -50,8 +50,12 @@ services:
       FF_ACCESS_SECRET: ""
       INIT_ERR_OUTPUT: ""
 
-    command: >
-      jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
+    command:
+      - /bin/bash
+      - -c
+      - |
+        wget https://raw.githubusercontent.com/jupyterhub/jupyterhub/${JUPYTERHUB_VERSION}/examples/cull-idle/cull_idle_servers.py
+        jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
 
 volumes:
   data:
