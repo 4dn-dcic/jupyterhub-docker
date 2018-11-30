@@ -164,18 +164,19 @@ c.JupyterHub.db_url = os.path.join(data_dir, 'jupyterhub.sqlite')
 c.Authenticator.whitelist = whitelist = set()
 c.Authenticator.admin_users = admin = set()
 c.JupyterHub.admin_access = True
+admin_email = os.environ['ADMIN_EMAIL']
 ff_users = ff_utils.search_metadata('search/?type=User&field=email', key=ff_keys)
 for ff_user in ff_users:
     if not ff_user.get('email'):
         continue
     whitelist.add(ff_user['email'])
     # base admin off of a set environment variable, for now
-    if os.environ['ADMIN_EMAIL'] == ff_user['email']:
+    if admin_email == ff_user['email']:
         admin.add(ff_user['email'])
 
 # add API token to the instance
 c.JupyterHub.api_tokens = {
-    jh_token: os.environ['ADMIN_EMAIL'],
+    jh_token: admin_email,
 }
 
 # set up services
