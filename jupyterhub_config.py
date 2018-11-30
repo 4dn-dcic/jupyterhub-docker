@@ -176,7 +176,7 @@ for ff_user in ff_users:
 
 # add API token to the instance
 c.JupyterHub.api_tokens = {
-    jh_token: admin_email,
+    jh_token['secret']: admin_email,
 }
 
 # set up services
