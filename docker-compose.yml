@@ -31,6 +31,8 @@ services:
       DOCKER_NOTEBOOK_IMAGE: ${DOCKER_NOTEBOOK_IMAGE}
       # Notebook directory inside user image
       DOCKER_NOTEBOOK_DIR: ${DOCKER_NOTEBOOK_DIR}
+      # Data directory inside the user image
+      DATA_VOLUME_CONTAINER: ${DATA_VOLUME_CONTAINER}
       # Using this run command (optional)
       DOCKER_SPAWN_CMD: ${DOCKER_SPAWN_CMD}
       AUTH0_SUBDOMAIN: hms-dbmi
