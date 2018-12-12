@@ -3,6 +3,7 @@ import sys
 import dockerspawner
 import boto3
 import json
+import datetime
 from dcicutils import ff_utils, s3_utils
 from botocore.exceptions import ClientError
 
@@ -36,6 +37,8 @@ def initialize_user_content(spawner):
     In addition, load access keys from Fourfront and add them to the
     environment variables of the notebook. Also delete previously created
     access keys used for Jupyterhub for the user
+    Also initialized a TrackingItem of type jupyterhub_session to track some
+    basic information on the JH session
     """
     err_output = []  # keep track of errors for debugging
     username = spawner.user.name  # get the username
@@ -90,6 +93,23 @@ def initialize_user_content(spawner):
         else:
             os.environ['FF_ACCESS_KEY'] = key_res['access_key_id']
             os.environ['FF_ACCESS_SECRET'] = key_res['secret_access_key']
+
+        # intialize a tracking item for the session and store its uuid in env
+        tracking_body = {
+            'jupyterhub_session': {
+                'date_initialized': datetime.datetime.now(datetime.timezone.utc),
+                'user_uuid': ff_user['uuid']
+            },
+            'tracking_type': 'jupyterhub_session'
+        }
+        try:
+            track_res = ff_utils.post_metadata(tracking_body, 'tracking-items')
+        except Exception as track_exc:
+            err_output.append({'tracking_item': str(track_exc)})
+        else:
+            # does this need to be track_res[0]['@graph']['uuid']?
+            os.environ['FF_TRACKING_ID'] = track_res['uuid']
+
     os.environ['INIT_ERR_OUTPUT'] = json.dumps(err_output)
 
 
@@ -97,7 +117,8 @@ c.JupyterHub.log_level  = "DEBUG"
 # attach the hook function to the spawner
 c.Spawner.pre_spawn_hook = initialize_user_content
 # propogate these variables to the user notebook processes
-c.Spawner.env_keep.extend(['FF_ACCESS_KEY', 'FF_ACCESS_SECRET', 'INIT_ERR_OUTPUT'])
+c.Spawner.env_keep.extend(['FF_ACCESS_KEY', 'FF_ACCESS_SECRET',
+                           'INIT_ERR_OUTPUT', 'FF_TRACKING_ID'])
 # limit the memory use for single-user servers
 c.Spawner.mem_limit = '2G'
 # Spawn single-user servers as Docker containers

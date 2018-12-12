@@ -8,3 +8,5 @@ RUN /opt/conda/bin/conda clean -tipsy && \
         dockerspawner==0.10.* \
         dcicutils>=0.5.7 \
         jupyterhub-dummyauthenticator==0.3.*
+
+COPY ./cull_idle_servers.py /srv/jupyterhub/cull_idle_servers.py
