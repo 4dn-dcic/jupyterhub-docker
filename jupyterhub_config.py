@@ -103,7 +103,7 @@ def initialize_user_content(spawner):
             'tracking_type': 'jupyterhub_session'
         }
         try:
-            track_res = ff_utils.post_metadata(tracking_body, 'tracking-items')
+            track_res = ff_utils.post_metadata(tracking_body, 'tracking-items', key=ff_keys)
         except Exception as track_exc:
             err_output.append({'tracking_item': str(track_exc)})
         else:

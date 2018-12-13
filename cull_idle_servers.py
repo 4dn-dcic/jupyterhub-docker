@@ -29,7 +29,7 @@ the ``--cull-users`` option.
 
 from datetime import datetime, timezone
 from functools import partial
-from dcicutils import jh_utils
+from dcicutils import ff_utils, s3_utils
 import json
 import os
 
@@ -46,6 +46,10 @@ from tornado.log import app_log
 from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 from tornado.ioloop import IOLoop, PeriodicCallback
 from tornado.options import define, options, parse_command_line
+
+# get access keys and jupyterhub token for dcicutils. always use 'data' env
+s3_helper = s3_utils.s3Utils(env='data')
+ff_keys = s3_helper.get_ff_key()
 
 
 def parse_date(date_string):
@@ -86,7 +90,7 @@ def add_date_culled_to_session():
     # get current item
     track_id = os.environ['FF_TRACKING_ID']
     try:
-        track_res = jh_utils.get_metadata(track_id)
+        track_res = ff_utils.get_metadata(track_id, key=ff_keys)
     except:
         pass  # Nothing to do here
     else:
@@ -94,7 +98,7 @@ def add_date_culled_to_session():
         if session and isinstance(session, dict):
             session['date_culled'] = datetime.utcnow().isoformat() + '+00:00'
             try:
-                jh_utils.patch_metadata({'jupyterhub_session': session}, track_id)
+                ff_utils.patch_metadata({'jupyterhub_session': session}, track_id, key=ff_keys)
             except:
                 pass
 
