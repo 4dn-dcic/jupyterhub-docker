@@ -47,6 +47,8 @@ from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 from tornado.ioloop import IOLoop, PeriodicCallback
 from tornado.options import define, options, parse_command_line
 
+print('\n!!! %s\n' % os.environ)
+
 # get access keys and jupyterhub token for dcicutils. always use 'data' env
 s3_helper = s3_utils.s3Utils(env='data')
 ff_keys = s3_helper.get_ff_key()

@@ -207,5 +207,7 @@ c.JupyterHub.services = [
         'name': 'cull-idle',
         'admin': True,
         'command': [sys.executable, 'cull_idle_servers.py', '--timeout=3600'],
+        'environment': {'SECRET': os.environ['SECRET'],
+                        'FF_TRACKING_ID': os.environ.get('FF_TRACKING_ID', '')}
     }
 ]
