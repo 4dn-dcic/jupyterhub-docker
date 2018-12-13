@@ -97,7 +97,7 @@ def initialize_user_content(spawner):
         # intialize a tracking item for the session and store its uuid in env
         tracking_body = {
             'jupyterhub_session': {
-                'date_initialized': datetime.datetime.now(datetime.timezone.utc),
+                'date_initialized': datetime.datetime.utcnow().isoformat() + '+00:00',
                 'user_uuid': ff_user['uuid']
             },
             'tracking_type': 'jupyterhub_session'
