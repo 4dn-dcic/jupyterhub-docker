@@ -93,10 +93,10 @@ def add_date_culled_to_session():
         session = track_res.get('jupyterhub_session')
         if session and isinstance(session, dict):
             session['date_culled'] = datetime.now(timezone.utc)
-        try:
-            jh_utils.patch_metadata({'jupyterhub_session': session})
-        except:
-            pass
+            try:
+                jh_utils.patch_metadata({'jupyterhub_session': session})
+            except:
+                pass
 
 
 @coroutine
