@@ -208,6 +208,8 @@ c.JupyterHub.services = [
         'admin': True,
         'command': [sys.executable, 'cull_idle_servers.py', '--timeout=3600'],
         'environment': {'SECRET': os.environ['SECRET'],
+                        'AWS_ACCESS_KEY_ID': os.environ['AWS_ACCESS_KEY_ID'],
+                        'AWS_SECRET_ACCESS_KEY': os.environ['AWS_SECRET_ACCESS_KEY'],
                         'FF_TRACKING_ID': os.environ.get('FF_TRACKING_ID', '')}
     }
 ]
