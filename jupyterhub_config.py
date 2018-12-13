@@ -107,8 +107,7 @@ def initialize_user_content(spawner):
         except Exception as track_exc:
             err_output.append({'tracking_item': str(track_exc)})
         else:
-            # does this need to be track_res[0]['@graph']['uuid']?
-            os.environ['FF_TRACKING_ID'] = track_res['uuid']
+            os.environ['FF_TRACKING_ID'] = track_res['@graph'][0]['uuid']
 
     os.environ['INIT_ERR_OUTPUT'] = json.dumps(err_output)
 
