@@ -51,6 +51,7 @@ services:
       FF_ACCESS_KEY: ""
       FF_ACCESS_SECRET: ""
       INIT_ERR_OUTPUT: ""
+      FF_TRACKING_ID: ""
 
     command:
       - /bin/bash

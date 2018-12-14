@@ -3,6 +3,7 @@ import sys
 import dockerspawner
 import boto3
 import json
+import datetime
 from dcicutils import ff_utils, s3_utils
 from botocore.exceptions import ClientError
 
@@ -36,6 +37,8 @@ def initialize_user_content(spawner):
     In addition, load access keys from Fourfront and add them to the
     environment variables of the notebook. Also delete previously created
     access keys used for Jupyterhub for the user
+    Also initialized a TrackingItem of type jupyterhub_session to track some
+    basic information on the JH session
     """
     err_output = []  # keep track of errors for debugging
     username = spawner.user.name  # get the username
@@ -90,14 +93,56 @@ def initialize_user_content(spawner):
         else:
             os.environ['FF_ACCESS_KEY'] = key_res['access_key_id']
             os.environ['FF_ACCESS_SECRET'] = key_res['secret_access_key']
+
+        # intialize a tracking item for the session and store its uuid in env
+        tracking_body = {
+            'jupyterhub_session': {
+                'date_initialized': datetime.datetime.utcnow().isoformat() + '+00:00',
+                'user_uuid': ff_user['uuid']
+            },
+            'tracking_type': 'jupyterhub_session'
+        }
+        try:
+            track_res = ff_utils.post_metadata(tracking_body, 'tracking-items', key=ff_keys)
+        except Exception as track_exc:
+            err_output.append({'tracking_item': str(track_exc)})
+        else:
+            os.environ['FF_TRACKING_ID'] = track_res['@graph'][0]['uuid']
+
     os.environ['INIT_ERR_OUTPUT'] = json.dumps(err_output)
 
 
+def finalize_user_content(spawner):
+    """
+    This function is called after the singleruser notebook stops.
+    Responsible for:
+    - adding date_culled to the TrackingItem given by FF_TRACKING_ID
+    """
+    if not os.environ.get('FF_TRACKING_ID'):
+        return
+    # get current item
+    track_id = os.environ['FF_TRACKING_ID']
+    try:
+        track_res = ff_utils.get_metadata(track_id, key=ff_keys)
+    except:
+        pass  # Nothing to do here
+    else:
+        session = track_res.get('jupyterhub_session')
+        if session and isinstance(session, dict):
+            session['date_culled'] = datetime.datetime.utcnow().isoformat() + '+00:00'
+            try:
+                ff_utils.patch_metadata({'jupyterhub_session': session}, track_id, key=ff_keys)
+            except:
+                pass
+
+
 c.JupyterHub.log_level  = "DEBUG"
-# attach the hook function to the spawner
+# attach the hook functions to the spawner
 c.Spawner.pre_spawn_hook = initialize_user_content
+c.Spawner.post_stop_hook = finalize_user_content
 # propogate these variables to the user notebook processes
-c.Spawner.env_keep.extend(['FF_ACCESS_KEY', 'FF_ACCESS_SECRET', 'INIT_ERR_OUTPUT'])
+c.Spawner.env_keep.extend(['FF_ACCESS_KEY', 'FF_ACCESS_SECRET',
+                           'INIT_ERR_OUTPUT', 'FF_TRACKING_ID'])
 # limit the memory use for single-user servers
 c.Spawner.mem_limit = '2G'
 # Spawn single-user servers as Docker containers
@@ -181,10 +226,12 @@ c.JupyterHub.api_tokens = {
 
 # set up services
 # cull-idle runs every 3600 seconds
+# turn on logging by adding --logging=debug to the command
+# extra environment variable can be added by passing in a 'environment' dict
 c.JupyterHub.services = [
     {
         'name': 'cull-idle',
         'admin': True,
-        'command': [sys.executable, 'cull_idle_servers.py', '--timeout=3600'],
+        'command': [sys.executable, 'cull_idle_servers.py', '--timeout=3600']
     }
 ]
