@@ -129,7 +129,7 @@ def finalize_user_content(spawner):
     else:
         session = track_res.get('jupyterhub_session')
         if session and isinstance(session, dict):
-            session['date_culled'] = datetime.utcnow().isoformat() + '+00:00'
+            session['date_culled'] = datetime.datetime.utcnow().isoformat() + '+00:00'
             try:
                 ff_utils.patch_metadata({'jupyterhub_session': session}, track_id, key=ff_keys)
             except:
