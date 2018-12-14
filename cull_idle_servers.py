@@ -47,8 +47,6 @@ from tornado.httpclient import AsyncHTTPClient, HTTPRequest
 from tornado.ioloop import IOLoop, PeriodicCallback
 from tornado.options import define, options, parse_command_line
 
-print('\n!!! %s\n' % os.environ)
-
 # get access keys and jupyterhub token for dcicutils. always use 'data' env
 s3_helper = s3_utils.s3Utils(env='data')
 ff_keys = s3_helper.get_ff_key()
@@ -213,6 +211,9 @@ def cull_idle(url, api_token, inactive_limit, cull_users=False, max_age=0, concu
         else:
             delete_url = url + '/users/%s/server' % quote(user['name'])
 
+        # record when server was culled to the Fourfront session info
+        add_date_culled_to_session()
+
         req = HTTPRequest(
             url=delete_url, method='DELETE', headers=auth_header,
         )
@@ -324,7 +325,6 @@ def cull_idle(url, api_token, inactive_limit, cull_users=False, max_age=0, concu
             app_log.exception("Error processing %s", name)
         else:
             if result:
-                add_date_culled_to_session()
                 app_log.debug("Finished culling %s", name)
 
 
