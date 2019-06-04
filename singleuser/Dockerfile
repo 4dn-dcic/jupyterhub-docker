@@ -3,4 +3,4 @@ FROM $DOCKER_NOTEBOOK_IMAGE
 ARG JUPYTERHUB_VERSION
 RUN python3 -m pip install --no-cache jupyterhub==$JUPYTERHUB_VERSION
 ARG JS_CONFIG_DIR
-COPY custom.js
+COPY custom.js JS_CONFIG_DIR
