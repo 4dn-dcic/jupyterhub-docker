@@ -114,7 +114,7 @@ def initialize_user_content(spawner):
 
 def finalize_user_content(spawner):
     """
-    This function is called after the singleruser notebook stops.
+    This function is called after the singleuser notebook stops.
     Responsible for:
     - adding date_culled to the TrackingItem given by FF_TRACKING_ID
     """
@@ -152,7 +152,7 @@ c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 # with the appropriate tag that pins version. Otherwise, do something like:
 # c.DockerSpawner.image = 'jupyter/scipy-notebook:8f56e3c47fec'
 c.DockerSpawner.image = os.environ['DOCKER_NOTEBOOK_IMAGE']
-# default `start_singleruser.sh` is included
+# default `start_singleuser.sh` is included
 c.DockerSpawner.cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
 # can I remove these two lines?
 # spawn_cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
