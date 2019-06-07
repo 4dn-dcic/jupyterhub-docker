@@ -6,5 +6,5 @@ RUN /opt/conda/bin/conda clean -tipsy && \
     /opt/conda/bin/pip install --no-cache-dir \
         oauthenticator==0.8.* \
         dockerspawner==0.10.* \
-        dcicutils>=0.7.2 \
+        dcicutils>=0.7.3 \
         jupyterhub-dummyauthenticator==0.3.*
