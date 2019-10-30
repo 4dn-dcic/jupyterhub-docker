@@ -95,12 +95,14 @@ def initialize_user_content(spawner):
             os.environ['FF_ACCESS_SECRET'] = key_res['secret_access_key']
 
         # intialize a tracking item for the session and store its uuid in env
+        # set `submitted_by` manually to allow user to edit
         tracking_body = {
             'jupyterhub_session': {
                 'date_initialized': datetime.datetime.utcnow().isoformat() + '+00:00',
                 'user_uuid': ff_user['uuid']
             },
-            'tracking_type': 'jupyterhub_session'
+            'tracking_type': 'jupyterhub_session',
+            'submitted_by': ff_user['uuid']
         }
         try:
             track_res = ff_utils.post_metadata(tracking_body, 'tracking-items', key=ff_keys)
@@ -209,20 +211,22 @@ c.JupyterHub.db_url = os.path.join(data_dir, 'jupyterhub.sqlite')
 c.Authenticator.whitelist = whitelist = set()
 c.Authenticator.admin_users = admin = set()
 c.JupyterHub.admin_access = True
-admin_email = os.environ['ADMIN_EMAIL']
+# comma-separated admin emails, lowercased
+admin_emails = [email.strip().lower() for email in os.environ.get('ADMIN_EMAILS', '').split(',')]
 ff_users = ff_utils.search_metadata('search/?type=User&field=email', key=ff_keys)
 for ff_user in ff_users:
     if not ff_user.get('email'):
         continue
     whitelist.add(ff_user['email'])
     # base admin off of a set environment variable, for now
-    if admin_email == ff_user['email']:
+    if ff_user['email'].lower() in admin_emails:
         admin.add(ff_user['email'])
 
-# add API token to the instance
-c.JupyterHub.api_tokens = {
-    jh_token['secret']: admin_email,
-}
+# add API token to the instance. Use the **only** the first admin email
+if admin_emails:
+    c.JupyterHub.api_tokens = {
+        jh_token['secret']: admin_emails[0],
+    }
 
 # set up services
 # cull-idle runs every 3600 seconds

@@ -115,7 +115,7 @@ RUN pip3 install cooler==0.7.11
 RUN pip3 install numpy Cython click pairtools
 
 ## install dcicutils
-RUN pip3 install dcicutils>=0.7.3
+RUN pip3 install dcicutils>=0.8.1
 
 ## other python libraries
 RUN pip3 install scipy matplotlib pandas h5py pyBigWig
