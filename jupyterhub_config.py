@@ -50,20 +50,13 @@ def initialize_user_content(spawner):
         template_key = template_res['Key']
         user_subdir = 'user-' + escape_string(username)
         notebook_temp_key = '/'.join([user_subdir, template_key])
-        try:
-            s3_client.head_object(Bucket=os.environ['AWS_NOTEBOOK_BUCKET'],
-                                  Key=notebook_temp_key)
-        except ClientError as head_exc:
-            if head_exc.response.get('Error', {}).get('Code') == '404':
-                source_info = {"Bucket": os.environ['AWS_TEMPLATE_BUCKET'],
-                               "Key": template_key}
-                try:
-                    s3_client.copy_object(Bucket=os.environ["AWS_NOTEBOOK_BUCKET"],
-                                          Key=notebook_temp_key, CopySource=source_info)
-                except Exception as copy_exc:
-                    err_output.append({'copying_templates': str(copy_exc)})
-            else:
-                err_output.append({'finding_templates': str(head_exc)})
+        source_info = {"Bucket": os.environ['AWS_TEMPLATE_BUCKET'],
+                       "Key": template_key}
+        try:  # always replace templates
+            s3_client.copy_object(Bucket=os.environ["AWS_NOTEBOOK_BUCKET"],
+                                  Key=notebook_temp_key, CopySource=source_info)
+        except Exception as copy_exc:
+            err_output.append({'copying_templates': str(copy_exc)})
 
     # get the access keys and set them as environment variables for the user
     try:
