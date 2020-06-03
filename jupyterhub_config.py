@@ -29,6 +29,13 @@ def escape_string(in_str):
     )
 
 
+def clear_old_access_keys():
+    """ Helper method that deletes access key information currently in the env """
+    if 'FF_ACCESS_KEY' in os.environ:
+        del os.environ['FF_ACCESS_KEY']
+    if 'FF_SECRET_KEY' in os.environ:
+        del os.environ['FF_SECRET_KEY']
+
 def initialize_user_content(spawner):
     """
     Used to initialize the users s3-backed notebook storage.
@@ -45,7 +52,10 @@ def initialize_user_content(spawner):
     list_res = s3_client.list_objects_v2(
         Bucket=os.environ['AWS_TEMPLATE_BUCKET']
     )
-    # check each template individually
+    # wipe any old access key state
+    clear_old_access_keys()
+
+    # check each template individually  
     for template_res in list_res.get('Contents', []):
         template_key = template_res['Key']
         user_subdir = 'user-' + escape_string(username)
