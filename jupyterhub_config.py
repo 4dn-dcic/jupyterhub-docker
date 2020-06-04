@@ -52,8 +52,6 @@ def initialize_user_content(spawner):
     list_res = s3_client.list_objects_v2(
         Bucket=os.environ['AWS_TEMPLATE_BUCKET']
     )
-    # wipe any old access key state
-    clear_old_access_keys()
 
     # check each template individually  
     for template_res in list_res.get('Contents', []):
@@ -72,6 +70,7 @@ def initialize_user_content(spawner):
     try:
         ff_user = ff_utils.get_metadata('/users/' + username, key=ff_keys)
     except Exception as user_exc:
+        clear_old_access_keys()  # if we fail here, clear the access keys
         err_output.append({'getting_user': str(user_exc)})
     else:
         key_descrip = 'jupyterhub_key'
@@ -92,6 +91,7 @@ def initialize_user_content(spawner):
         try:
             key_res = ff_utils.post_metadata(key_body, 'access-keys', key=ff_keys)
         except Exception as key_exc:
+            clear_old_access_keys()
             err_output.append({'post_key': str(key_exc)})
         else:
             os.environ['FF_ACCESS_KEY'] = key_res['access_key_id']
