@@ -32,9 +32,10 @@ def escape_string(in_str):
 def clear_old_access_keys():
     """ Helper method that deletes access key information currently in the env """
     if 'FF_ACCESS_KEY' in os.environ:
-        del os.environ['FF_ACCESS_KEY']
+        os.environ['FF_ACCESS_KEY'] = ''
     if 'FF_SECRET_KEY' in os.environ:
-        del os.environ['FF_SECRET_KEY']
+        os.environ['FF_SECRET_KEY'] = ''
+
 
 def initialize_user_content(spawner):
     """
@@ -53,6 +54,9 @@ def initialize_user_content(spawner):
         Bucket=os.environ['AWS_TEMPLATE_BUCKET']
     )
 
+    # clear old state
+    clear_old_access_keys()
+
     # check each template individually  
     for template_res in list_res.get('Contents', []):
         template_key = template_res['Key']
@@ -70,7 +74,6 @@ def initialize_user_content(spawner):
     try:
         ff_user = ff_utils.get_metadata('/users/' + username, key=ff_keys)
     except Exception as user_exc:
-        clear_old_access_keys()  # if we fail here, clear the access keys
         err_output.append({'getting_user': str(user_exc)})
     else:
         key_descrip = 'jupyterhub_key'
@@ -91,7 +94,6 @@ def initialize_user_content(spawner):
         try:
             key_res = ff_utils.post_metadata(key_body, 'access-keys', key=ff_keys)
         except Exception as key_exc:
-            clear_old_access_keys()
             err_output.append({'post_key': str(key_exc)})
         else:
             os.environ['FF_ACCESS_KEY'] = key_res['access_key_id']
