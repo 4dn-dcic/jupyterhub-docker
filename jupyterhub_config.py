@@ -32,9 +32,10 @@ def escape_string(in_str):
 def clear_old_access_keys():
     """ Helper method that deletes access key information currently in the env """
     if 'FF_ACCESS_KEY' in os.environ:
-        del os.environ['FF_ACCESS_KEY']
+        os.environ['FF_ACCESS_KEY'] = ''
     if 'FF_SECRET_KEY' in os.environ:
-        del os.environ['FF_SECRET_KEY']
+        os.environ['FF_SECRET_KEY'] = ''
+
 
 def initialize_user_content(spawner):
     """
@@ -52,7 +53,8 @@ def initialize_user_content(spawner):
     list_res = s3_client.list_objects_v2(
         Bucket=os.environ['AWS_TEMPLATE_BUCKET']
     )
-    # wipe any old access key state
+
+    # clear old state
     clear_old_access_keys()
 
     # check each template individually  
