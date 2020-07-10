@@ -38,7 +38,10 @@ def clear_old_access_keys():
 
 
 def recompute_ff_keys(err_output):
-    """ Helper method used in the pre/post spawn hooks that will"""
+    """ Helper method used in the pre/post spawn hooks that will recompute
+        the access keys needed in spawner context. This is safe to do since
+        the spawner does not propogate this information to the child container
+    """
     try:
         ff_keys = s3_helper.get_ff_key()
     except Exception as e:
@@ -60,8 +63,8 @@ def initialize_user_content(spawner):
     basic information on the JH session
     """
     err_output = []  # keep track of errors for debugging
-   
-    # grab this info fresh every time 
+
+    # grab this info fresh every time
     ff_keys = recompute_ff_keys(err_output)
 
     username = spawner.user.name  # get the username
@@ -69,7 +72,7 @@ def initialize_user_content(spawner):
         Bucket=os.environ['AWS_TEMPLATE_BUCKET']
     )
 
-    # check each template individually  
+    # check each template individually
     for template_res in list_res.get('Contents', []):
         template_key = template_res['Key']
         user_subdir = 'user-' + escape_string(username)
@@ -87,7 +90,7 @@ def initialize_user_content(spawner):
         ff_user = ff_utils.get_metadata('/users/' + username, key=ff_keys)
     except Exception as user_exc:
         err_output.append({'getting_user': str(user_exc)})
-        clear_old_access_keys()  # if we get here, old access key state must be cleared. 
+        clear_old_access_keys()  # if we get here, old access key state must be cleared.
     else:
         key_descrip = 'jupyterhub_key'
         search_q = ''.join(['/search/?type=AccessKey&status=current&description=',
@@ -139,8 +142,8 @@ def finalize_user_content(spawner):
     Responsible for:
     - adding date_culled to the TrackingItem given by FF_TRACKING_ID
     """
-    # grab this info fresh every time 
-    ff_keys = recompute_ff_keys(err_output) 
+    # grab this info fresh every time
+    ff_keys = recompute_ff_keys(err_output)
 
     if not os.environ.get('FF_TRACKING_ID'):
         return
