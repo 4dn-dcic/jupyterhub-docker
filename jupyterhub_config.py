@@ -143,6 +143,7 @@ def finalize_user_content(spawner):
     - adding date_culled to the TrackingItem given by FF_TRACKING_ID
     """
     # grab this info fresh every time
+    err_output = []
     ff_keys = recompute_ff_keys(err_output)
 
     if not os.environ.get('FF_TRACKING_ID'):
