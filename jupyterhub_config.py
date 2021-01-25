@@ -143,6 +143,7 @@ def finalize_user_content(spawner):
     - adding date_culled to the TrackingItem given by FF_TRACKING_ID
     """
     # grab this info fresh every time
+    err_output = []
     ff_keys = recompute_ff_keys(err_output)
 
     if not os.environ.get('FF_TRACKING_ID'):
@@ -186,11 +187,9 @@ c.DockerSpawner.cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
 # c.DockerSpawner.extra_create_kwargs.update({ 'command': spawn_cmd })
 
 # Connect containers to this Docker network
-network_name = os.environ['DOCKER_NETWORK_NAME']
+network_name = 'bridge'  # unused?
 c.DockerSpawner.use_internal_ip = True
-c.DockerSpawner.network_name = network_name
-# Pass the network name as argument to spawned containers
-c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
+c.DockerSpawner.network_name = os.environ['DOCKER_NETWORK_NAME'] 
 
 notebook_dir = os.environ['DOCKER_NOTEBOOK_DIR']
 c.DockerSpawner.notebook_dir = notebook_dir
