@@ -14,7 +14,6 @@ services:
         JUPYTERHUB_VERSION: ${JUPYTERHUB_VERSION}
     image: jupyterhub
     container_name: jupyterhub
-    network_mode: bridge
     volumes:
       # Bind Docker socket on the host so we can connect to the daemon from
       # within the container
