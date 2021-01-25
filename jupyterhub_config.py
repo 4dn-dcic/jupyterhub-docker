@@ -187,7 +187,7 @@ c.DockerSpawner.cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
 # c.DockerSpawner.extra_create_kwargs.update({ 'command': spawn_cmd })
 
 # Connect containers to this Docker network
-network_name = 'bridge'
+network_name = 'bridge'  # unused?
 c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = os.environ['DOCKER_NETWORK_NAME'] 
 
