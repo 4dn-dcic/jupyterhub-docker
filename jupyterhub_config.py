@@ -198,10 +198,12 @@ c.DockerSpawner.notebook_dir = notebook_dir
 # notebook_mount_dir in form: '/path/on/host'
 notebook_mount_dir = '/home/ubuntu/data/jupyterhub-fourfront-notebooks/user-{username}'
 raw_data_mount_dir = '/home/ubuntu/data/' + os.environ['AWS_RAW_FILE_BUCKET']
+open_data_mount_dir = '/home/ubuntu/data/' + os.environ['AWS_OPEN_DATA_BUCKET']
 proc_data_mount_dir = '/home/ubuntu/data/' + os.environ['AWS_PROC_FILE_BUCKET']
 # notebook_dir in form: '/path/on/container'
 c.DockerSpawner.volumes = {notebook_mount_dir: {"bind": notebook_dir, "mode": "rw"},
                            raw_data_mount_dir: {"bind": '/home/jovyan/raw_data', "mode": "ro"},
+                           open_data_mount_dir: {"bind": '/home/jovyan/open_data', "mode": "ro"},
                            proc_data_mount_dir: {"bind": '/home/jovyan/proc_data', "mode": "ro"}}
 
 # allow escaped characters in volume names
