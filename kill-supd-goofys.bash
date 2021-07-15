@@ -1,0 +1,2 @@
+pkill supervisord
+pkill goofys
