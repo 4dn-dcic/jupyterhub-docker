@@ -189,7 +189,7 @@ c.DockerSpawner.cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
 # Connect containers to this Docker network
 network_name = 'bridge'  # unused?
 c.DockerSpawner.use_internal_ip = True
-c.DockerSpawner.network_name = os.environ['DOCKER_NETWORK_NAME'] 
+c.DockerSpawner.network_name = os.environ['DOCKER_NETWORK_NAME']
 
 notebook_dir = os.environ['DOCKER_NOTEBOOK_DIR']
 c.DockerSpawner.notebook_dir = notebook_dir
@@ -239,9 +239,9 @@ c.Authenticator.admin_users = admin = set()
 c.JupyterHub.admin_access = True
 # comma-separated admin emails, lowercased
 admin_emails = [email.strip().lower() for email in os.environ.get('ADMIN_EMAILS', '').split(',')]
-ff_users = ff_utils.search_metadata('search/?type=User&field=email', key=ff_keys)
+ff_users = ff_utils.search_metadata('search/?type=User&field=email&field=lab', key=ff_keys)
 for ff_user in ff_users:
-    if not ff_user.get('email'):
+    if not ff_user.get('email') or not ff_user.get('lab'):  # do not allow users without a lab
         continue
     whitelist.add(ff_user['email'])
     # base admin off of a set environment variable, for now
