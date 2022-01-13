@@ -1,10 +1,17 @@
 ARG JUPYTERHUB_VERSION
 FROM jupyterhub/jupyterhub-onbuild:$JUPYTERHUB_VERSION
 
+# Install conda
+RUN curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor > conda.gpg && \
+    install -o root -g root -m 644 conda.gpg /etc/apt/trusted.gpg.d/ && \
+    echo "deb [arch=amd64] https://repo.anaconda.com/pkgs/misc/debrepo/conda stable main" | tee /etc/apt/sources.list.d/conda.list && \
+    apt update && \
+    apt install conda
+
 # Install dockerspawner, oauth, dcicutils
 RUN /opt/conda/bin/conda clean -tipsy && \
     /opt/conda/bin/pip install --no-cache-dir \
-        oauthenticator==0.8.* \
-        dockerspawner==0.10.* \
-        dcicutils>=1.19.0 \
+        oauthenticator==14.2.* \
+        dockerspawner==12.1.* \
+        dcicutils>=3.6.1 \
         jupyterhub-dummyauthenticator==0.3.*
