@@ -54,8 +54,7 @@ services:
       INIT_ERR_OUTPUT: ""
       FF_TRACKING_ID: ""
 
-    command:
-      - /bin/bash -c /opt/conda/bin/python -m jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
+    command: jupyterhub upgrade-db
 
 volumes:
   data:
