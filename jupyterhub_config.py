@@ -164,6 +164,7 @@ def finalize_user_content(spawner):
                 pass
 
 
+# JH Config options
 c.JupyterHub.log_level  = "DEBUG"
 # attach the hook functions to the spawner
 c.Spawner.pre_spawn_hook = initialize_user_content
@@ -185,6 +186,30 @@ c.DockerSpawner.cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
 # can I remove these two lines?
 # spawn_cmd = os.environ.get('DOCKER_SPAWN_CMD', "start-singleuser.sh")
 # c.DockerSpawner.extra_create_kwargs.update({ 'command': spawn_cmd })
+
+# Configure idle culler service
+# This used to be a Python script we had to grab directly, but is now
+# fully integrated as a (non admin) hub service
+c.JupyterHub.services = [
+    {
+        'name': 'idle-culler',
+        'command': [sys.executable, '-m', 'jupyterhub_idle_culler', '--timeout=3600'],
+    }
+]
+c.JupyterHub.load_roles = [
+    {
+        "name": "list-and-cull", # name the role
+        "services": [
+            "idle-culler", # assign the service to this role
+        ],
+        "scopes": [
+            # declare what permissions the service should have
+            "list:users", # list users
+            "read:users:activity", # read user last-activity
+            "admin:servers", # start/stop servers
+        ],
+    }
+]
 
 # Connect containers to this Docker network
 network_name = 'bridge'  # unused?
@@ -254,14 +279,3 @@ if admin_emails:
         jh_token['secret']: admin_emails[0],
     }
 
-# set up services
-# cull-idle runs every 3600 seconds
-# turn on logging by adding --logging=debug to the command
-# extra environment variable can be added by passing in a 'environment' dict
-c.JupyterHub.services = [
-    {
-        'name': 'cull-idle',
-        'admin': True,
-        'command': [sys.executable, 'cull_idle_servers.py', '--timeout=3600', '--logging=debug']
-    }
-]

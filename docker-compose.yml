@@ -55,11 +55,7 @@ services:
       FF_TRACKING_ID: ""
 
     command:
-      - /bin/bash
-      - -c
-      - |
-        wget https://raw.githubusercontent.com/jupyterhub/jupyterhub/${JUPYTERHUB_VERSION}/examples/cull-idle/cull_idle_servers.py
-        jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
+      - /bin/bash -c /opt/conda/bin/python -m jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
 
 volumes:
   data:
