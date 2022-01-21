@@ -4,6 +4,7 @@ import dockerspawner
 import boto3
 import json
 import datetime
+import string
 from dcicutils import ff_utils, s3_utils
 from botocore.exceptions import ClientError
 
@@ -20,12 +21,18 @@ def escape_string(in_str):
     """
     Escape a string the way DockerSpawner does, which is needed to make
     the user email match
+    NOTE: since dockerspawner 12.0, the old escape method is deprecated 
+    and in fact does not function at all since the referenced fields 
+    were removed.
+    This change has to do with DNS/container naming and should be scrutinized.
+    Dockerspawner claims a new convention is used, but can disable it.
     """
-    ds_class = dockerspawner.dockerspawner.DockerSpawner
+    _docker_safe_chars = set(string.ascii_letters + string.digits + "-")
+    _docker_escape_char = '_'
     return dockerspawner.dockerspawner.escape(
         in_str,
-        safe=ds_class._docker_safe_chars,
-        escape_char=ds_class._docker_escape_char
+        safe=_docker_safe_chars,
+        escape_char=_docker_escape_char
     )
 
 
@@ -215,6 +222,7 @@ c.JupyterHub.load_roles = [
 network_name = 'bridge'  # unused?
 c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = os.environ['DOCKER_NETWORK_NAME'] 
+c.DockerSpawner.escape = 'legacy'  # disable new escape behavior
 
 notebook_dir = os.environ['DOCKER_NOTEBOOK_DIR']
 c.DockerSpawner.notebook_dir = notebook_dir
@@ -234,7 +242,7 @@ c.DockerSpawner.volumes = {notebook_mount_dir: {"bind": notebook_dir, "mode": "r
 # allow escaped characters in volume names
 c.DockerSpawner.format_volume_name = dockerspawner.volumenamingstrategy.escaped_format_volume_name
 # Remove containers once they are stopped
-c.DockerSpawner.remove_containers = True
+c.DockerSpawner.remove = True
 # For debugging arguments passed to spawned containers
 c.DockerSpawner.debug = True
 
@@ -249,6 +257,7 @@ c.JupyterHub.port = 80
 c.Auth0OAuthenticator.client_id = os.environ['AUTH0_CLIENT_ID']
 c.Auth0OAuthenticator.client_secret = os.environ['AUTH0_CLIENT_SECRET']
 c.Auth0OAuthenticator.oauth_callback_url = os.environ['AUTH0_CALLBACK_URL']
+c.Auth0OAuthenticator.auth0_subdomain = os.environ['AUTH0_DOMAIN']
 c.JupyterHub.authenticator_class = 'oauthenticator.auth0.Auth0OAuthenticator'
 
 # Development authenticator
