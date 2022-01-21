@@ -36,7 +36,7 @@ RUN apt-get update -y && apt-get install -y \
     python3-setuptools \
     && wget https://bootstrap.pypa.io/get-pip.py \
     && python3 get-pip.py \
-    && ln -s /usr/bin/python3.6 /tools/python
+    && ln -s /usr/bin/python3 /tools/python
 
 
 ## SOFTWARE: samtools
