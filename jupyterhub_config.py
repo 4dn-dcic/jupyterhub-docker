@@ -238,8 +238,7 @@ admin = set()
 c.JupyterHub.admin_access = True
 # Grab THE FIRST of potentially many comma-separated admin emails, lower-cased
 # Change this when >1 admin is desired - Will 21 Jan 2022
-admin_emails = [email.strip().lower() for email in os.environ.get('ADMIN_EMAILS', '').split(',')[0]]
-
+admin_emails = [email.strip().lower() for email in os.environ.get('ADMIN_EMAILS', '').split(',')]
 # Grab email, lab info on all users
 ff_users = ff_utils.search_metadata('search/?type=User&field=email&field=lab', key=ff_keys)
 for ff_user in ff_users:
