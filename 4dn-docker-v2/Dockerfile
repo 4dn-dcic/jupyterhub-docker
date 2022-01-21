@@ -4,6 +4,8 @@ MAINTAINER William Ronchetti (william_ronchetti@hms.harvard.edu)
 USER root
 WORKDIR /tools
 
+ENV PYTHON_VERSION=3.8
+
 # 1. general updates & installing necessary Linux components
 RUN apt-get update -y && apt-get install -y \
     bc \
@@ -30,7 +32,7 @@ RUN apt-get update -y && apt-get install -y \
     libmysqlclient-dev
 
 
-# installing python3.6 & pip
+# installing python3.8 & pip
 RUN apt-get update -y && apt-get install -y \
     python3-minimal \
     python3-setuptools \
