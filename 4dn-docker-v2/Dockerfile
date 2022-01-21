@@ -30,7 +30,7 @@ RUN apt-get update -y && apt-get install -y \
     libmysqlclient-dev
 
 
-# installing python3.5 & pip
+# installing python3.6 & pip
 RUN apt-get update -y && apt-get install -y \
     python3-minimal \
     python3-setuptools \
@@ -93,7 +93,6 @@ ENV PATH=/tools/pairix/util/bam2pairs/:$PATH
 ENV PATH=/tools/bedtools2/bin/:$PATH
 ENV PATH=/tools/kentUtils/bin/:$PATH
 
-
 # supporting UTF-8
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
@@ -114,7 +113,7 @@ RUN pip3 install cooler==0.7.11
 RUN pip3 install numpy Cython click pairtools
 
 ## install dcicutils
-RUN pip3 install dcicutils>=1.19.0
+RUN pip3 install dcicutils>=3.6.1
 
 ## other python libraries
 RUN pip3 install scipy matplotlib pandas h5py pyBigWig
