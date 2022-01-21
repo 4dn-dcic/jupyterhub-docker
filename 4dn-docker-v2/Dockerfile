@@ -1,10 +1,8 @@
-FROM jupyter/minimal-notebook:ubuntu-20.04
+FROM jupyter/minimal-notebook:python-3.8.8
 MAINTAINER William Ronchetti (william_ronchetti@hms.harvard.edu)
 
 USER root
 WORKDIR /tools
-
-ENV PYTHON_VERSION=3.8
 
 # 1. general updates & installing necessary Linux components
 RUN apt-get update -y && apt-get install -y \
@@ -30,15 +28,6 @@ RUN apt-get update -y && apt-get install -y \
     zlib1g-dev \
     liblz4-tool \
     libmysqlclient-dev
-
-
-# installing python3.8 & pip
-RUN apt-get update -y && apt-get install -y \
-    python3-minimal \
-    python3-setuptools \
-    && wget https://bootstrap.pypa.io/get-pip.py \
-    && python3 get-pip.py \
-    && ln -s /usr/bin/python3 /tools/python
 
 
 ## SOFTWARE: samtools
