@@ -91,23 +91,9 @@ ENV LANG=C.UTF-8
 USER jovyan
 WORKDIR /home/jovyan/work
 
-## SOFTWARE: cooler
-## VERSION: 0.7.11
-## TYPE: aggregator,normalizer
-## SOURCE_URL: https://github.com/mirnylab/cooler
-RUN pip3 install cooler==0.7.11
-
-## SOFTWARE: pairtools
-## COMMIT: 0.2.0
-## TYPE: file format converter,sorter,annotater,filter
-## SOURCE_URL: https://github.com/mirnylab/pairsamtools
-RUN pip3 install numpy Cython click pairtools
-
-## install dcicutils
-RUN pip3 install dcicutils>=3.6.1
-
-## other python libraries
-RUN pip3 install scipy matplotlib pandas h5py pyBigWig
+# Install packages
+COPY singleuser-requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
 
 ## Add necessary custom JS file
 RUN mkdir -p /home/jovyan/.jupyter/custom
