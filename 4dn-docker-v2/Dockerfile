@@ -93,6 +93,7 @@ WORKDIR /home/jovyan/work
 
 # Install packages
 COPY singleuser-requirements.txt requirements.txt
+RUN pip3 install numpy
 RUN pip3 install -r requirements.txt
 
 ## Add necessary custom JS file
