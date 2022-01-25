@@ -6,7 +6,6 @@ import json
 import datetime
 import string
 from dcicutils import ff_utils, s3_utils
-from botocore.exceptions import ClientError
 
 
 # Initialize JH
@@ -187,6 +186,7 @@ c.JupyterHub.log_level  = 'DEBUG'
 # User containers will access hub by container name on the Docker network
 c.JupyterHub.hub_ip = 'jupyterhub'
 c.JupyterHub.hub_port = 8080
+c.JupyterHub.shutdown_on_logout = True  # shutdown user notebooks on logout
 
 # TLS config
 c.JupyterHub.port = 80
