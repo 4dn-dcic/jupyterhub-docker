@@ -223,6 +223,7 @@ c.Auth0OAuthenticator.client_id = os.environ['AUTH0_CLIENT_ID']
 c.Auth0OAuthenticator.client_secret = os.environ['AUTH0_CLIENT_SECRET']
 c.Auth0OAuthenticator.oauth_callback_url = os.environ['AUTH0_CALLBACK_URL']
 c.Auth0OAuthenticator.auth0_subdomain = os.environ['AUTH0_DOMAIN']
+c.Auth0OAuthenticator.logout_redirect_url = 'https://jupyter.4dnucleome.org/'
 
 # Development authenticator (comment out above and uncomment below to enable)
 # c.JupyterHub.authenticator_class = 'dummyauthenticator.DummyAuthenticator'
