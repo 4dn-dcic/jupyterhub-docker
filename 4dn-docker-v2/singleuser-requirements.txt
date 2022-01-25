@@ -11,7 +11,7 @@ click
 # SOURCE_URL: https://github.com/mirnylab/pairsamtools
 # XXX: a version is not actually pinned?
 pairtools
-dcicutils>=3.6.1
+dcicutils>=3.7.0.1b1
 scipy
 matplotlib
 pandas
