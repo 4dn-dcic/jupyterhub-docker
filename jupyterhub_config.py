@@ -254,7 +254,8 @@ for ff_user in ff_users:
         allowed_users.add(email)
 
         # If first admin email from before is located, add it to admin set
-        if email.lower() in admin_emails:
+        email = email.lower()
+        if email in admin_emails:
             admin.add(email)
 
 # Set these sets in the hub
