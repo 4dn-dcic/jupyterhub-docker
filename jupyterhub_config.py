@@ -234,6 +234,7 @@ c.JupyterHub.db_url = os.path.join(data_dir, 'jupyterhub.sqlite')
 
 # User Configuration
 allowed_users = set()
+blocked_users = set()
 admin = set()
 c.JupyterHub.admin_access = True
 # Grab THE FIRST of potentially many comma-separated admin emails, lower-cased
@@ -242,18 +243,22 @@ admin_emails = [email.strip().lower() for email in os.environ.get('ADMIN_EMAILS'
 # Grab email, lab info on all users
 ff_users = ff_utils.search_metadata('search/?type=User&field=email&field=lab', key=ff_keys)
 for ff_user in ff_users:
-
+    email, lab = ff_user.get('email'), ff_user.get('lab')
     # Allow users into JH if they have both email and lab fields
-    if not ff_user.get('email') or not ff_user.get('lab'):
+    if not email or not lab:
+        print(f'Blocking user {email}')
+        blocked_users.add(email)
         continue
-    allowed_users.add(ff_user['email'])
+    else:
+        allowed_users.add(email)
 
-    # If first admin email from before is located, add it to admin set
-    if ff_user['email'].lower() in admin_emails:
-        admin.add(ff_user['email'])
+        # If first admin email from before is located, add it to admin set
+        if email.lower() in admin_emails:
+            admin.add(email)
 
 # Set these sets in the hub
 c.Authenticator.allowed_users = allowed_users
+c.Authenticator.blocked_users = blocked_users
 c.Authenticator.admin_users = admin
 
 # add API token to the instance. Use **only** the first admin email
