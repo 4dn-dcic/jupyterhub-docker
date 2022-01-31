@@ -1,0 +1,19 @@
+# SOFTWARE: cooler
+# VERSION: 0.7.11
+# TYPE: aggregator,normalizer
+# SOURCE_URL: https://github.com/mirnylab/cooler
+cooler==0.7.11
+Cython
+click
+# SOFTWARE: pairtools
+# COMMIT: 0.2.0
+# TYPE: file format converter,sorter,annotater,filter
+# SOURCE_URL: https://github.com/mirnylab/pairsamtools
+# XXX: a version is not actually pinned?
+pairtools
+dcicutils>=3.7.0.1b1
+scipy
+matplotlib
+pandas
+h5py
+pyBigWig

@@ -1,6 +1,5 @@
-FROM jupyter/minimal-notebook:8ccdfc1da8d5
-## This image is based on ubuntu 18.04
-MAINTAINER Soo Lee (duplexa@gmail.com)
+FROM jupyter/minimal-notebook:python-3.8.8
+MAINTAINER William Ronchetti (william_ronchetti@hms.harvard.edu)
 
 USER root
 WORKDIR /tools
@@ -29,15 +28,6 @@ RUN apt-get update -y && apt-get install -y \
     zlib1g-dev \
     liblz4-tool \
     libmysqlclient-dev
-
-
-# installing python3.5 & pip
-RUN apt-get update -y && apt-get install -y \
-    python3-minimal \
-    python3-setuptools \
-    && wget https://bootstrap.pypa.io/get-pip.py \
-    && python3 get-pip.py \
-    && ln -s /usr/bin/python3.6 /tools/python
 
 
 ## SOFTWARE: samtools
@@ -94,7 +84,6 @@ ENV PATH=/tools/pairix/util/bam2pairs/:$PATH
 ENV PATH=/tools/bedtools2/bin/:$PATH
 ENV PATH=/tools/kentUtils/bin/:$PATH
 
-
 # supporting UTF-8
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
@@ -102,23 +91,10 @@ ENV LANG=C.UTF-8
 USER jovyan
 WORKDIR /home/jovyan/work
 
-## SOFTWARE: cooler
-## VERSION: 0.7.11
-## TYPE: aggregator,normalizer
-## SOURCE_URL: https://github.com/mirnylab/cooler
-RUN pip3 install cooler==0.7.11
-
-## SOFTWARE: pairtools
-## COMMIT: 0.2.0
-## TYPE: file format converter,sorter,annotater,filter
-## SOURCE_URL: https://github.com/mirnylab/pairsamtools
-RUN pip3 install numpy Cython click pairtools
-
-## install dcicutils
-RUN pip3 install dcicutils>=1.19.0
-
-## other python libraries
-RUN pip3 install scipy matplotlib pandas h5py pyBigWig
+# Install packages
+COPY singleuser-requirements.txt requirements.txt
+RUN pip3 install numpy
+RUN pip3 install -r requirements.txt
 
 ## Add necessary custom JS file
 RUN mkdir -p /home/jovyan/.jupyter/custom

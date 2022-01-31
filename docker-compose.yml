@@ -35,7 +35,7 @@ services:
       DATA_VOLUME_CONTAINER: ${DATA_VOLUME_CONTAINER}
       # Using this run command (optional)
       DOCKER_SPAWN_CMD: ${DOCKER_SPAWN_CMD}
-      AUTH0_SUBDOMAIN: hms-dbmi
+      AUTH0_DOMAIN: hms-dbmi
       # these should be set in the environment of the machine running Docker
       AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID}
       AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET}
@@ -54,12 +54,7 @@ services:
       INIT_ERR_OUTPUT: ""
       FF_TRACKING_ID: ""
 
-    command:
-      - /bin/bash
-      - -c
-      - |
-        wget https://raw.githubusercontent.com/jupyterhub/jupyterhub/${JUPYTERHUB_VERSION}/examples/cull-idle/cull_idle_servers.py
-        jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
+      #command: jupyterhub upgrade-db
 
 volumes:
   data:
