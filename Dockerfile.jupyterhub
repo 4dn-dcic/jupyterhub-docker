@@ -13,5 +13,8 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 COPY hub-requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
+# Delete system level kernel
+#RUN jupyter kernelspec uninstall python3
+
 # Copy custom templates
 COPY templates/* /opt/venv/share/jupyterhub/templates

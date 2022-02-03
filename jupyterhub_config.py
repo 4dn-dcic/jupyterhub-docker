@@ -233,6 +233,10 @@ data_dir = os.environ['DATA_VOLUME_CONTAINER']
 c.JupyterHub.cookie_secret_file = os.path.join(data_dir, 'jupyterhub_cookie_secret')
 c.JupyterHub.db_url = os.path.join(data_dir, 'jupyterhub.sqlite')
 
+# Set default kernel, note that this much match what was created in 
+# the custom singleuser notebook image - Will Feb 2nd 2022
+c.MultiKernelManager.default_kernel_name = 'python38' 
+
 # User Configuration
 allowed_users = set()
 blocked_users = set()
@@ -280,7 +284,8 @@ c.Spawner.post_stop_hook = finalize_user_content
 
 # Propagate ONLY these variables to the user notebook processes
 c.Spawner.env_keep.extend(['FF_ACCESS_KEY', 'FF_ACCESS_SECRET',
-                           'INIT_ERR_OUTPUT', 'FF_TRACKING_ID'])
+                           'INIT_ERR_OUTPUT', 'FF_TRACKING_ID',
+                           'CONDA_DEFAULT_ENV', 'NOTEBOOK_ARGS'])
 # Limit the memory use for single-user servers
 c.Spawner.mem_limit = '1G'
 
@@ -291,7 +296,6 @@ c.DockerSpawner.image = os.environ['DOCKER_NOTEBOOK_IMAGE']
 c.DockerSpawner.cmd = os.environ.get('DOCKER_SPAWN_CMD', 'start-singleuser.sh')
 
 # Connect containers to this Docker network
-# network_name = 'bridge'  # unused?
 c.DockerSpawner.use_internal_ip = True
 c.DockerSpawner.network_name = os.environ['DOCKER_NETWORK_NAME']
 
