@@ -284,8 +284,7 @@ c.Spawner.post_stop_hook = finalize_user_content
 
 # Propagate ONLY these variables to the user notebook processes
 c.Spawner.env_keep.extend(['FF_ACCESS_KEY', 'FF_ACCESS_SECRET',
-                           'INIT_ERR_OUTPUT', 'FF_TRACKING_ID',
-                           'CONDA_DEFAULT_ENV', 'NOTEBOOK_ARGS'])
+                           'INIT_ERR_OUTPUT', 'FF_TRACKING_ID'])
 # Limit the memory use for single-user servers
 c.Spawner.mem_limit = '1G'
 

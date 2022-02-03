@@ -53,8 +53,6 @@ services:
       FF_ACCESS_SECRET: ""
       INIT_ERR_OUTPUT: ""
       FF_TRACKING_ID: ""
-      CONDA_DEFAULT_ENV: "python38"
-      NOTEBOOK_ARGS: "--kernel python38"
 
 volumes:
   data:
