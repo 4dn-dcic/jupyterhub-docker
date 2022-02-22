@@ -1,8 +1,21 @@
-FROM jupyter/minimal-notebook:python-3.8.8
+FROM jupyter/minimal-notebook:ubuntu-20.04
 MAINTAINER William Ronchetti (william_ronchetti@hms.harvard.edu)
 
 USER root
 WORKDIR /tools
+
+# 0. Get Python 3.8
+ARG conda_env=python38
+ARG py_ver=3.8
+RUN mamba create --quiet --yes -p "${CONDA_DIR}/envs/${conda_env}" python=${py_ver} ipython ipykernel && \
+    mamba clean --all -f -y
+
+# create Python 3.8 environment and link it to jupyter
+RUN "${CONDA_DIR}/envs/${conda_env}/bin/python" -m ipykernel install --user --name="${conda_env}" && \
+    fix-permissions "${CONDA_DIR}" && \
+    fix-permissions "/home/${NB_USER}"
+ENV PATH "${CONDA_DIR}/envs/${conda_env}/bin:${PATH}"
+ENV CONDA_DEFAULT_ENV ${conda_env}
 
 # 1. general updates & installing necessary Linux components
 RUN apt-get update -y && apt-get install -y \
@@ -28,7 +41,6 @@ RUN apt-get update -y && apt-get install -y \
     zlib1g-dev \
     liblz4-tool \
     libmysqlclient-dev
-
 
 ## SOFTWARE: samtools
 ## VERSION: 1.2
@@ -91,14 +103,14 @@ ENV LANG=C.UTF-8
 USER jovyan
 WORKDIR /home/jovyan/work
 
-# Install packages
+# Install package (into venv)
 COPY singleuser-requirements.txt requirements.txt
-RUN pip3 install numpy
-RUN pip3 install -r requirements.txt
+RUN pip install wheel numpy
+RUN pip install -r requirements.txt
+RUN echo "conda activate python38" >> ~/.bashrc
 
 ## Add necessary custom JS file
 RUN mkdir -p /home/jovyan/.jupyter/custom
 COPY custom.js /home/jovyan/.jupyter/custom/
-
 
 CMD ["bash"]
