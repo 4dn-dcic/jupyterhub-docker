@@ -53,6 +53,7 @@ services:
       FF_ACCESS_SECRET: ""
       INIT_ERR_OUTPUT: ""
       FF_TRACKING_ID: ""
+      GLOBAL_ENV_BUCKET: ${GLOBAL_ENV_BUCKET}
 
 volumes:
   data:
