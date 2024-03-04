@@ -101,6 +101,9 @@ def initialize_user_content(spawner):
     # get the access keys and set them as environment variables for the user
     try:
         ff_user = ff_utils.get_metadata('/users/' + username, key=ff_keys)
+        lab = ff_user.get('lab', None)
+        if not lab:
+            raise Exception("Access denied: user has no lab")
     except Exception as user_exc:
         err_output.append({'getting_user': str(user_exc)})
         clear_old_access_keys()  # if we get here, old access key state must be cleared.
