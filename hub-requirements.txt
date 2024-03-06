@@ -1,6 +1,6 @@
 jupyterhub-idle-culler
 oauthenticator==14.2.*
 dockerspawner==12.1.*
-dcicutils==3.14.0
+dcicutils==7.5.1
 jupyterhub-dummyauthenticator==0.3.*
 typing_extensions
