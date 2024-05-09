@@ -44,8 +44,8 @@ def clear_old_access_keys():
     """ Helper method that deletes access key information currently in the env """
     if 'FF_ACCESS_KEY' in os.environ:
         os.environ['FF_ACCESS_KEY'] = ''
-    if 'FF_SECRET_KEY' in os.environ:
-        os.environ['FF_SECRET_KEY'] = ''
+    if 'FF_ACCESS_SECRET' in os.environ:
+        os.environ['FF_ACCESS_SECRET'] = ''
 
 
 def recompute_ff_keys(err_output):
@@ -103,8 +103,8 @@ def initialize_user_content(spawner):
         ff_user = ff_utils.get_metadata('/users/' + username, key=ff_keys)
         lab = ff_user.get('lab', None)
         admin = ff_user.get('groups', [None])[0] == 'admin'
-        if not lab or admin:
-            raise Exception("Access denied: user has no lab")
+        if not lab or not admin:
+            raise Exception(f"Access denied: got no lab or admin for user {ff_user}")
     except Exception as user_exc:
         err_output.append({'getting_user': str(user_exc)})
         clear_old_access_keys()  # if we get here, old access key state must be cleared.
