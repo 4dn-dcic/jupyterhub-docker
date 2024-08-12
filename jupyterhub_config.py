@@ -16,6 +16,7 @@ s3_client = boto3.client('s3')
 s3_helper = s3_utils.s3Utils(env='data')
 ff_keys = s3_helper.get_ff_key()
 jh_token = s3_helper.get_jupyterhub_key()
+exit_on_err = True  # set this to False in order to see err_output on startup - Will 12 August 2024
 
 
 # Helper Functions
@@ -151,6 +152,11 @@ def initialize_user_content(spawner):
             os.environ['FF_TRACKING_ID'] = track_res['@graph'][0]['uuid']
 
     os.environ['INIT_ERR_OUTPUT'] = json.dumps(err_output)
+    
+    # if we are not in debug mode, raise exception including the error in the end
+    # this should cause the spawner to actually exit
+    if err_output and exit_on_err:
+        raise Exception(err_output)
 
 
 def finalize_user_content(spawner):
