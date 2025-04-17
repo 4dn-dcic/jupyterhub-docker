@@ -104,7 +104,7 @@ def initialize_user_content(spawner):
         ff_user = ff_utils.get_metadata('/users/' + username, key=ff_keys)
         lab = ff_user.get('lab', None)
         admin = ff_user.get('groups', [None])[0] == 'admin'
-        if not lab or not admin:
+        if not lab and not admin:
             raise Exception(f"Access denied: got no lab or admin for user {ff_user}")
     except Exception as user_exc:
         err_output.append({'getting_user': str(user_exc)})
